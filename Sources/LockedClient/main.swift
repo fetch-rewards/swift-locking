@@ -6,3 +6,9 @@
 //
 
 import Locked
+import os
+
+class SharedClass {
+    @Locked(.checked)
+    var mutableProperty: Int = 5
+}
