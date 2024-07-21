@@ -9,7 +9,7 @@
 
 @attached(accessor)
 @attached(peer, names: prefixed(_))
-package macro Locked(_ lockType: LockType) = #externalMacro(
+public macro Locked(_ lockType: LockType) = #externalMacro(
     module: "LockedMacros",
     type: "LockedMacro"
 )
