@@ -6,7 +6,6 @@
 //
 
 import Locked
-import os
 
 class SharedClass {
     @Locked(.checked)

@@ -6,6 +6,7 @@
 //
 
 @_exported import LockedArguments
+@_exported import os
 
 @attached(accessor)
 @attached(peer, names: prefixed(_))
