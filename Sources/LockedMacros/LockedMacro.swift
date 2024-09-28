@@ -66,7 +66,24 @@ public struct LockedMacro {
         }
 
         guard let type = binding.typeAnnotation?.type else {
-            fatalError("AHHHH")
+            guard
+                let initializer = binding.initializer,
+                let functionCallExpression = initializer.value.as(
+                    FunctionCallExprSyntax.self
+                )
+            else {
+                fatalError("AHHHH")
+            }
+
+            let calledExpression = functionCallExpression.calledExpression
+
+            return (
+                pattern.identifier.trimmed,
+                TypeSyntax(
+                    stringLiteral: calledExpression.trimmedDescription
+                ),
+                initializer.value.trimmed
+            )
         }
 
         return (
