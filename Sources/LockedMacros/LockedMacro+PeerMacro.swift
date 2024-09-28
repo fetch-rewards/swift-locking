@@ -26,37 +26,55 @@ extension LockedMacro: PeerMacro {
             DeclModifierSyntax(name: .keyword(.private))
         }
 
-        // OSAllocatedUnfairLock<PropertyType>
-        let osAllocatedUnfairLock = GenericSpecializationExprSyntax(
-            expression: DeclReferenceExprSyntax(
-                baseName: .identifier("OSAllocatedUnfairLock")
-            ),
-            genericArgumentClause: GenericArgumentClauseSyntax {
-                GenericArgumentSyntax(argument: type)
-            }
-        )
+        let pattern = IdentifierPatternSyntax(identifier: "_\(name)")
+        let typeName: TokenSyntax = .identifier("OSAllocatedUnfairLock")
+        let genericArgumentClause = GenericArgumentClauseSyntax {
+            GenericArgumentSyntax(argument: type)
+        }
 
-        // OSAllocatedUnfairLock<PropertyType>(initialState: propertyValue)
-        let osAllocatedUnfairLockInitialization = FunctionCallExprSyntax(
-            calledExpression: osAllocatedUnfairLock,
-            leftParen: .leftParenToken(),
-            arguments: LabeledExprListSyntax {
-                LabeledExprSyntax(
-                    label: self.osAllocatedUnfairLockInitializerLabel(node: node),
-                    colon: .colonToken(),
-                    expression: value
-                )
-            },
-            rightParen: .rightParenToken()
-        )
+        let binding: PatternBindingSyntax
 
-        // _propertyName = OSAllocatedUnfairLock<PropertyType>(...)
-        let binding = PatternBindingSyntax(
-            pattern: IdentifierPatternSyntax(identifier: "_\(name)"),
-            initializer: InitializerClauseSyntax(
-                value: osAllocatedUnfairLockInitialization
+        if let value {
+            // OSAllocatedUnfairLock<PropertyType>
+            let osAllocatedUnfairLock = GenericSpecializationExprSyntax(
+                expression: DeclReferenceExprSyntax(baseName: typeName),
+                genericArgumentClause: genericArgumentClause
             )
-        )
+
+            // OSAllocatedUnfairLock<PropertyType>(initialState: propertyValue)
+            let osAllocatedUnfairLockInitialization = FunctionCallExprSyntax(
+                calledExpression: osAllocatedUnfairLock,
+                leftParen: .leftParenToken(),
+                arguments: LabeledExprListSyntax {
+                    LabeledExprSyntax(
+                        label: self.osAllocatedUnfairLockInitializerLabel(node: node),
+                        colon: .colonToken(),
+                        expression: value
+                    )
+                },
+                rightParen: .rightParenToken()
+            )
+
+            // _propertyName = OSAllocatedUnfairLock<PropertyType>(...)
+            binding = PatternBindingSyntax(
+                pattern: pattern,
+                initializer: InitializerClauseSyntax(
+                    value: osAllocatedUnfairLockInitialization
+                )
+            )
+        } else {
+            // _propertyName: OSAllocatedUnfairLock<PropertyType>
+            binding = PatternBindingSyntax(
+                pattern: pattern,
+                typeAnnotation: TypeAnnotationSyntax(
+                    colon: .colonToken(),
+                    type: IdentifierTypeSyntax(
+                        name: typeName,
+                        genericArgumentClause: genericArgumentClause
+                    )
+                )
+            )
+        }
 
         // private let _propertyName = OSAllocatedUnfairLock<PropertyType>(...)
         let backingProperty = VariableDeclSyntax(

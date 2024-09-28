@@ -44,7 +44,7 @@ public struct LockedMacro {
     ) throws -> (
         name: TokenSyntax,
         type: any TypeSyntaxProtocol,
-        value: any ExprSyntaxProtocol
+        value: (any ExprSyntaxProtocol)?
     ) {
         guard let propertyDeclaration = declaration.as(VariableDeclSyntax.self) else {
             fatalError("AHHHH")
@@ -69,14 +69,10 @@ public struct LockedMacro {
             fatalError("AHHHH")
         }
 
-        guard let initializer = binding.initializer else {
-            fatalError("AHHHH")
-        }
-
         return (
             pattern.identifier.trimmed,
             type.trimmed,
-            initializer.value.trimmed
+            binding.initializer?.value.trimmed
         )
     }
 }
