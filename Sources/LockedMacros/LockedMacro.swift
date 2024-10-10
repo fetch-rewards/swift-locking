@@ -5,9 +5,9 @@
 //  Created by Gray Campbell on 7/19/24.
 //
 
-import SwiftSyntax
+public import SwiftSyntax
 import SwiftSyntaxBuilder
-import SwiftSyntaxMacros
+public import SwiftSyntaxMacros
 import SwiftSyntaxSugar
 
 public struct LockedMacro: AccessorMacro, PeerMacro {
