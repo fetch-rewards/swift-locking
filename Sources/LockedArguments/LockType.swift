@@ -1,6 +1,6 @@
 //
 //  LockType.swift
-//  Shared
+//  LockedArguments
 //
 //  Created by Gray Campbell on 7/21/24.
 //

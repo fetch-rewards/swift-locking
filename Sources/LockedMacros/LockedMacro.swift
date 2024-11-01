@@ -1,6 +1,6 @@
 //
 //  LockedMacro.swift
-//  MockedMacros
+//  LockedMacros
 //
 //  Created by Gray Campbell on 7/19/24.
 //
@@ -58,22 +58,22 @@ public struct LockedMacro {
         value: (any ExprSyntaxProtocol)?
     ) {
         guard let propertyDeclaration = declaration.as(VariableDeclSyntax.self) else {
-            fatalError("AHHHH")
+            throw LockedError.declarationMustBeProperty
         }
 
         guard propertyDeclaration.bindingSpecifier.tokenKind == .keyword(.var) else {
-            fatalError("AHHHH")
+            throw LockedError.propertyDeclarationBindingSpecifierMustBeVar
         }
 
         guard
             propertyDeclaration.bindings.count == 1,
             let binding = propertyDeclaration.bindings.first
         else {
-            fatalError("AHHHH")
+            throw LockedError.propertyDeclarationMustHaveExactlyOneBinding
         }
 
         guard let pattern = binding.pattern.as(IdentifierPatternSyntax.self) else {
-            fatalError("AHHHH")
+            throw LockedError.bindingPatternMustBeIdentifierPattern
         }
 
         guard let type = binding.typeAnnotation?.type else {
@@ -83,7 +83,7 @@ public struct LockedMacro {
                     FunctionCallExprSyntax.self
                 )
             else {
-                fatalError("AHHHH")
+                throw LockedError.bindingMustHaveTypeOrFunctionCallValue
             }
 
             let calledExpression = functionCallExpression.calledExpression
