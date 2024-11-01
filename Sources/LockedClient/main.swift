@@ -9,9 +9,9 @@ import Locked
 
 class SharedClass {
     @Locked(.checked)
-    var mutableProperty: Int = 5
+    var count: Int
 
-    init(value: Int) {
-        self.mutableProperty = value
+    init(count: Int) {
+        self.count = count
     }
 }
