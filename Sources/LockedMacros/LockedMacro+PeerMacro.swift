@@ -19,40 +19,17 @@ extension LockedMacro: PeerMacro {
         providingPeersOf declaration: some DeclSyntaxProtocol,
         in context: some MacroExpansionContext
     ) throws -> [DeclSyntax] {
-        let (name, type, value) = try self.parsedProperty(from: declaration)
-
-        // private
-        let modifiers = DeclModifierListSyntax {
-            DeclModifierSyntax(name: .keyword(.private))
-        }
-
+        let (name, type, value) = try self.propertyComponents(from: declaration)
         let pattern = IdentifierPatternSyntax(identifier: "_\(name)")
-        let typeName: TokenSyntax = .identifier("OSAllocatedUnfairLock")
-        let genericArgumentClause = GenericArgumentClauseSyntax {
-            GenericArgumentSyntax(argument: type)
-        }
 
         let binding: PatternBindingSyntax
 
         if let value {
-            // OSAllocatedUnfairLock<PropertyType>
-            let osAllocatedUnfairLock = GenericSpecializationExprSyntax(
-                expression: DeclReferenceExprSyntax(baseName: typeName),
-                genericArgumentClause: genericArgumentClause
-            )
-
-            // OSAllocatedUnfairLock<PropertyType>(initialState: propertyValue)
-            let osAllocatedUnfairLockInitialization = FunctionCallExprSyntax(
-                calledExpression: osAllocatedUnfairLock,
-                leftParen: .leftParenToken(),
-                arguments: LabeledExprListSyntax {
-                    LabeledExprSyntax(
-                        label: self.osAllocatedUnfairLockInitializerLabel(node: node),
-                        colon: .colonToken(),
-                        expression: value
-                    )
-                },
-                rightParen: .rightParenToken()
+            // OSAllocatedUnfairLock<PropertyType>(...: value)
+            let osAllocatedUnfairLockInitialization = self.osAllocatedUnfairLockInitialization(
+                node: node,
+                type: type,
+                value: value
             )
 
             // _propertyName = OSAllocatedUnfairLock<PropertyType>(...)
@@ -69,33 +46,24 @@ extension LockedMacro: PeerMacro {
                 typeAnnotation: TypeAnnotationSyntax(
                     colon: .colonToken(),
                     type: IdentifierTypeSyntax(
-                        name: typeName,
-                        genericArgumentClause: genericArgumentClause
+                        name: self.osAllocatedUnfairLockTypeName(),
+                        genericArgumentClause: GenericArgumentClauseSyntax {
+                            GenericArgumentSyntax(argument: type)
+                        }
                     )
                 )
             )
         }
 
-        // private let _propertyName = OSAllocatedUnfairLock<PropertyType>(...)
+        // private let _propertyName = OSAllocatedUnfairLock<PropertyType>...
         let backingProperty = VariableDeclSyntax(
-            modifiers: modifiers,
+            modifiers: DeclModifierListSyntax {
+                DeclModifierSyntax(name: .keyword(.private))
+            },
             bindingSpecifier: .keyword(.let),
             bindings: [binding]
         )
 
         return [DeclSyntax(backingProperty)]
-    }
-
-    // MARK: OSAllocatedUnfairLock Initializer
-
-    private static func osAllocatedUnfairLockInitializerLabel(
-        node: AttributeSyntax
-    ) -> TokenSyntax {
-        switch self.lockType(from: node) {
-        case .checked, .ifAvailableChecked:
-            .identifier("initialState")
-        case .unchecked, .ifAvailableUnchecked:
-            .identifier("uncheckedState")
-        }
     }
 }

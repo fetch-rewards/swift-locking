@@ -19,41 +19,202 @@ extension LockedMacro: AccessorMacro {
         providingAccessorsOf declaration: some DeclSyntaxProtocol,
         in context: some MacroExpansionContext
     ) throws -> [AccessorDeclSyntax] {
-        let (name, _, _) = try self.parsedProperty(from: declaration)
+        let (name, type, value) = try self.propertyComponents(from: declaration)
         let lockFunctionName = self.lockFunctionName(node: node)
 
-        // get { ... }
-        let getAccessor = try self.lockedPropertyAccessor(
-            keyword: .get,
+        let getAccessor = try self.lockedPropertyGetAccessor(
             propertyName: name,
             lockFunctionName: lockFunctionName
-        ) {
-            // propertyName
-            DeclReferenceExprSyntax(baseName: name)
+        )
+        let setAccessor = try self.lockedPropertySetAccessor(
+            propertyName: name,
+            lockFunctionName: lockFunctionName
+        )
+
+        guard value == nil else {
+            return [
+                getAccessor,
+                setAccessor,
+            ]
         }
 
-        // set { ... }
-        let setAccessor = try self.lockedPropertyAccessor(
-            keyword: .set,
-            propertyName: name,
-            lockFunctionName: lockFunctionName
-        ) {
-            // propertyName = newValue
-            SequenceExprSyntax {
-                DeclReferenceExprSyntax(baseName: name)
-                AssignmentExprSyntax(equal: .equalToken())
-                DeclReferenceExprSyntax(baseName: .identifier("newValue"))
-            }
-        }
+        let initAccessor = self.lockedPropertyInitAccessor(
+            node: node,
+            type: type,
+            propertyName: name
+        )
 
         return [
+            initAccessor,
             getAccessor,
             setAccessor,
         ]
     }
 
+    // MARK: Locked Property Accessors
+
+    /// Returns an `init` accessor for a locked property with the provided
+    /// `propertyName`.
+    ///
+    /// ## Example
+    /// ```swift
+    /// @storageRestrictions(initializes: _propertyName)
+    /// init(initialValue) {
+    ///     self._propertyName = OSAllocatedUnfairLock(initialState: initialValue)
+    /// }
+    /// ```
+    ///
+    /// - Parameters:
+    ///   - propertyName: The name of the property being locked.
+    ///   - lockFunctionName: The name of the `withLock` function.
+    /// - Returns: An `init` accessor for a locked property with the provided
+    ///   `propertyName`.
+    private static func lockedPropertyInitAccessor(
+        node: AttributeSyntax,
+        type: some TypeSyntaxProtocol,
+        propertyName: TokenSyntax
+    ) -> AccessorDeclSyntax {
+        // _propertyName
+        let backingPropertyReference = DeclReferenceExprSyntax(
+            baseName: .identifier("_\(propertyName)")
+        )
+
+        // @storageRestrictions(initializes: _propertyName)
+        let attributes = AttributeListSyntax {
+            AttributeSyntax(
+                atSign: .atSignToken(),
+                attributeName: IdentifierTypeSyntax(
+                    name: .identifier("storageRestrictions")
+                ),
+                leftParen: .leftParenToken(),
+                arguments: .argumentList(
+                    LabeledExprListSyntax {
+                        LabeledExprSyntax(
+                            label: .identifier("initializes"),
+                            colon: .colonToken(),
+                            expression: backingPropertyReference
+                        )
+                    }
+                ),
+                rightParen: .rightParenToken()
+            )
+        }
+
+        // initialValue
+        let initialValue: TokenSyntax = .identifier("initialValue")
+
+        // @storageRestrictions(initializes: _propertyName) init(initialValue) { ... }
+        return AccessorDeclSyntax(
+            attributes: attributes,
+            accessorSpecifier: .keyword(
+                .`init`,
+                leadingTrivia: .newline
+            ),
+            parameters: AccessorParametersSyntax(
+                leftParen: .leftParenToken(),
+                name: initialValue,
+                rightParen: .rightParenToken()
+            )
+        ) {
+            // self._propertyName = OSAllocatedUnfairLock(...: initialValue)
+            SequenceExprSyntax {
+                // self._propertyName
+                MemberAccessExprSyntax(
+                    base: DeclReferenceExprSyntax(
+                        baseName: .keyword(.self)
+                    ),
+                    period: .periodToken(),
+                    declName: backingPropertyReference
+                )
+
+                // =
+                AssignmentExprSyntax(equal: .equalToken())
+
+                // OSAllocatedUnfairLock(...: initialValue)
+                self.osAllocatedUnfairLockInitialization(
+                    node: node,
+                    type: type,
+                    value: DeclReferenceExprSyntax(baseName: initialValue)
+                )
+            }
+        }
+    }
+
+    /// Returns a `get` accessor for a locked property with the provided
+    /// `propertyName`.
+    ///
+    /// ## Example
+    /// ```swift
+    /// get {
+    ///     self._propertyName.withLock { propertyName in
+    ///         propertyName
+    ///     }
+    /// }
+    /// ```
+    ///
+    /// - Parameters:
+    ///   - propertyName: The name of the property being locked.
+    ///   - lockFunctionName: The name of the `withLock` function.
+    /// - Returns: A `get` accessor for a locked property with the provided
+    ///   `propertyName`.
+    private static func lockedPropertyGetAccessor(
+        propertyName: TokenSyntax,
+        lockFunctionName: TokenSyntax
+    ) throws -> AccessorDeclSyntax {
+        try AccessorDeclSyntax(accessorSpecifier: .keyword(.get)) {
+            try self.backingPropertyWithLockFunctionCallExpression(
+                propertyName: propertyName,
+                lockFunctionName: lockFunctionName
+            ) {
+                DeclReferenceExprSyntax(baseName: propertyName)
+            }
+        }
+    }
+
+    /// Returns a `set` accessor for a locked property with the provided
+    /// `propertyName`.
+    ///
+    /// ## Example
+    /// ```swift
+    /// set {
+    ///     self._propertyName.withLock { propertyName in
+    ///         propertyName = newValue
+    ///     }
+    /// }
+    /// ```
+    ///
+    /// - Parameters:
+    ///   - propertyName: The name of the property being locked.
+    ///   - lockFunctionName: The name of the `withLock` function.
+    /// - Returns: A `set` accessor for a locked property with the provided
+    ///   `propertyName`.
+    private static func lockedPropertySetAccessor(
+        propertyName: TokenSyntax,
+        lockFunctionName: TokenSyntax
+    ) throws -> AccessorDeclSyntax {
+        try AccessorDeclSyntax(accessorSpecifier: .keyword(.set)) {
+            try self.backingPropertyWithLockFunctionCallExpression(
+                propertyName: propertyName,
+                lockFunctionName: lockFunctionName
+            ) {
+                SequenceExprSyntax {
+                    DeclReferenceExprSyntax(baseName: propertyName)
+                    AssignmentExprSyntax(equal: .equalToken())
+                    DeclReferenceExprSyntax(baseName: .identifier("newValue"))
+                }
+            }
+        }
+    }
+
     // MARK: Lock Function
 
+    /// Returns the `withLock` function name associated with the `LockType`
+    /// parsed from the provided `node`.
+    ///
+    /// - Parameter node: The node from which to determine the `withLock`
+    ///   function name.
+    /// - Returns: The `withLock` function name associated with the `LockType`
+    ///   parsed from the provided `node`.
     private static func lockFunctionName(node: AttributeSyntax) -> TokenSyntax {
         switch self.lockType(from: node) {
         case .checked:
@@ -67,39 +228,29 @@ extension LockedMacro: AccessorMacro {
         }
     }
 
-    // MARK: Locked Property Accessors
-
-    /// Returns an accessor with the provided `keyword` for a locked property
-    /// with the provided `propertyName`.
+    /// Returns a `withLock` function call expression for accessing the backing
+    /// property for the property with the provided `propertyName`.
     ///
-    /// ## Examples
+    /// ## Example
     /// ```swift
-    /// get {
-    ///     self._propertyName.withLock { propertyName in
-    ///         // lockClosureStatementsBuilder
-    ///     }
-    /// }
-    /// set {
-    ///     self._propertyName.withLock { propertyName in
-    ///         // lockClosureStatementsBuilder
-    ///     }
+    /// self._propertyName.withLock { propertyName in
+    ///     // lockClosureStatementsBuilder
     /// }
     /// ```
     ///
     /// - Parameters:
-    ///   - keyword: The accessor's keyword (i.e. `get` or `set`).
     ///   - propertyName: The name of the property being locked.
+    ///   - lockFunctionName: The name of the `withLock` function.
     ///   - lockClosureStatementsBuilder: The statements builder for the
-    ///     accessor's `withLock` closure.
-    /// - Returns: An accessor with the provided `keyword` for a locked property
-    ///   with the provided `propertyName`.
-    private static func lockedPropertyAccessor(
-        keyword: Keyword,
+    ///     `withLock` closure.
+    /// - Returns: A `withLock` function call expression for accessing the
+    ///   backing property for the property with the provided `propertyName`.
+    private static func backingPropertyWithLockFunctionCallExpression(
         propertyName: TokenSyntax,
         lockFunctionName: TokenSyntax,
         @CodeBlockItemListBuilder
         lockClosureStatementsBuilder: () throws -> CodeBlockItemListSyntax
-    ) throws -> AccessorDeclSyntax {
+    ) throws -> FunctionCallExprSyntax {
         // self._propertyName
         let backingPropertyAccessExpression = MemberAccessExprSyntax(
             base: DeclReferenceExprSyntax(baseName: .keyword(.self)),
@@ -117,7 +268,7 @@ extension LockedMacro: AccessorMacro {
         )
 
         // self._propertyName.withLock { propertyName in ... }
-        let backingPropertyWithLockFunctionCallExpression = FunctionCallExprSyntax(
+        return FunctionCallExprSyntax(
             calledExpression: backingPropertyWithLockAccessExpression,
             arguments: [],
             trailingClosure: try ClosureExprSyntax(
@@ -134,9 +285,5 @@ extension LockedMacro: AccessorMacro {
                 statementsBuilder: lockClosureStatementsBuilder
             )
         )
-
-        return AccessorDeclSyntax(accessorSpecifier: .keyword(keyword)) {
-            backingPropertyWithLockFunctionCallExpression
-        }
     }
 }
