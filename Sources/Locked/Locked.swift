@@ -5,9 +5,12 @@
 //  Created by Gray Campbell on 7/19/24.
 //
 
-@attached(accessor)
+@_exported public import LockedArguments
+@_exported import os
+
+@attached(accessor, names: named(init), named(get), named(set))
 @attached(peer, names: prefixed(_))
-package macro Locked() = #externalMacro(
+public macro Locked(_ lockType: LockType) = #externalMacro(
     module: "LockedMacros",
     type: "LockedMacro"
 )
