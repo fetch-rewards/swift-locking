@@ -29,8 +29,8 @@ enum LockedError: Error, CustomStringConvertible {
     case bindingPatternMustBeIdentifierPattern
 
     /// The macro was applied to a property declaration with a binding that does
-    /// not have a type or a function call value.
-    case bindingMustHaveTypeOrFunctionCallValue
+    /// not have a parsable type.
+    case bindingPatternMustHaveTypeInformation
 
     // MARK: Properties
 
@@ -44,8 +44,8 @@ enum LockedError: Error, CustomStringConvertible {
             "@Locked property declaration must have exactly one binding."
         case .bindingPatternMustBeIdentifierPattern:
             "@Locked property declaration binding pattern must be identifier pattern."
-        case .bindingMustHaveTypeOrFunctionCallValue:
-            "@Locked property declaration binding must either have a type or a function call value."
+        case .bindingPatternMustHaveTypeInformation:
+            "@Locked property declaration binding must have type information."
         }
     }
 }

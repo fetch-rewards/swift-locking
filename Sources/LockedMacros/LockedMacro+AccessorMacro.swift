@@ -60,13 +60,16 @@ extension LockedMacro: AccessorMacro {
     /// ```swift
     /// @storageRestrictions(initializes: _propertyName)
     /// init(initialValue) {
-    ///     self._propertyName = OSAllocatedUnfairLock(initialState: initialValue)
+    ///     self._propertyName = OSAllocatedUnfairLock<PropertyType>(
+    ///         initialState: initialValue
+    ///     )
     /// }
     /// ```
     ///
     /// - Parameters:
+    ///   - node: The node from which to determine the `LockType`.
+    ///   - type: The type of the property being locked.
     ///   - propertyName: The name of the property being locked.
-    ///   - lockFunctionName: The name of the `withLock` function.
     /// - Returns: An `init` accessor for a locked property with the provided
     ///   `propertyName`.
     private static func lockedPropertyInitAccessor(

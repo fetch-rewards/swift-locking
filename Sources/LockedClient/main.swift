@@ -9,7 +9,7 @@ import Locked
 
 class SharedClass {
     @Locked(.checked)
-    var count: Int
+    var count = Int.zero
 
     init(count: Int) {
         self.count = count

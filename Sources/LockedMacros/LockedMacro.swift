@@ -76,32 +76,40 @@ public struct LockedMacro {
             throw LockedError.bindingPatternMustBeIdentifierPattern
         }
 
-        guard let type = binding.typeAnnotation?.type else {
-            guard
-                let initializer = binding.initializer,
-                let functionCallExpression = initializer.value.as(
-                    FunctionCallExprSyntax.self
-                )
-            else {
-                throw LockedError.bindingMustHaveTypeOrFunctionCallValue
-            }
+        let name = pattern.identifier.trimmed
+        let type = try self.type(from: binding)
+        let value = binding.initializer?.value.trimmed
 
+        return (name, type, value)
+    }
+
+    /// Returns a type parsed from the provided binding.
+    ///
+    /// - Parameter binding: The binding from which to parse the type.
+    /// - Throws: An error if a type could not be parsed from the provided
+    ///   binding.
+    /// - Returns: A type parsed from the provided binding.
+    private static func type(
+        from binding: PatternBindingSyntax
+    ) throws -> any TypeSyntaxProtocol {
+        if let type = binding.typeAnnotation?.type {
+            return type
+        } else if
+            let memberAccessExpression = binding.initializer?.value.as(
+                MemberAccessExprSyntax.self
+            ),
+            let base = memberAccessExpression.base
+        {
+            return TypeSyntax(stringLiteral: base.trimmedDescription)
+        } else if let functionCallExpression = binding.initializer?.value.as(
+            FunctionCallExprSyntax.self
+        ) {
             let calledExpression = functionCallExpression.calledExpression
 
-            return (
-                pattern.identifier.trimmed,
-                TypeSyntax(
-                    stringLiteral: calledExpression.trimmedDescription
-                ),
-                initializer.value.trimmed
-            )
+            return TypeSyntax(stringLiteral: calledExpression.trimmedDescription)
+        } else {
+            throw LockedError.bindingPatternMustHaveTypeInformation
         }
-
-        return (
-            pattern.identifier.trimmed,
-            type.trimmed,
-            binding.initializer?.value.trimmed
-        )
     }
 
     // MARK: OSAllocatedUnfairLock
