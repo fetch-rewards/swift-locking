@@ -5,7 +5,6 @@
 //  Created by Gray Campbell on 7/19/24.
 //
 
-@_exported public import LockedArguments
 @_exported import os
 
 @attached(accessor, names: named(init), named(get), named(set))

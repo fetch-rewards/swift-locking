@@ -36,13 +36,8 @@ let package = Package(
         .target(
             name: "Locked",
             dependencies: [
-                "LockedArguments",
                 "LockedMacros",
             ],
-            swiftSettings: .default
-        ),
-        .target(
-            name: "LockedArguments",
             swiftSettings: .default
         ),
         .executableTarget(
@@ -53,7 +48,6 @@ let package = Package(
         .macro(
             name: "LockedMacros",
             dependencies: [
-                "LockedArguments",
                 .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
                 .product(name: "SwiftCompilerPlugin", package: "swift-syntax"),
                 .product(name: "SwiftSyntaxSugar", package: "SwiftSyntaxSugar"),
