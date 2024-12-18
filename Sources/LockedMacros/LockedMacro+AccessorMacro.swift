@@ -228,10 +228,6 @@ extension LockedMacro: AccessorMacro {
             .identifier("withLock")
         case .unchecked:
             .identifier("withLockUnchecked")
-        case .ifAvailableChecked:
-            .identifier("withLockIfAvailable")
-        case .ifAvailableUnchecked:
-            .identifier("withLockIfAvailableUnchecked")
         }
     }
 

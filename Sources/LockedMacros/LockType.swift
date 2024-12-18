@@ -13,6 +13,4 @@ enum LockType: String {
 
     case checked
     case unchecked
-    case ifAvailableChecked
-    case ifAvailableUnchecked
 }
