@@ -1,13 +1,13 @@
 //
 //  LockType.swift
-//  LockedArguments
+//  LockedMacros
 //
 //  Created by Gray Campbell on 7/21/24.
 //
 
 import Foundation
 
-public enum LockType: String {
+enum LockType: String {
 
     // MARK: Cases
 

@@ -5,7 +5,6 @@
 //  Created by Gray Campbell on 7/19/24.
 //
 
-import LockedArguments
 import SwiftSyntax
 import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
@@ -93,7 +92,7 @@ public struct LockedMacro {
         from binding: PatternBindingSyntax
     ) throws -> any TypeSyntaxProtocol {
         if let type = binding.typeAnnotation?.type {
-            return type
+            return type.trimmed
         } else if
             let memberAccessExpression = binding.initializer?.value.as(
                 MemberAccessExprSyntax.self
