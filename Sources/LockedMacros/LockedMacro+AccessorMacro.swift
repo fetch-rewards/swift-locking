@@ -19,8 +19,12 @@ extension LockedMacro: AccessorMacro {
         providingAccessorsOf declaration: some DeclSyntaxProtocol,
         in context: some MacroExpansionContext
     ) throws -> [AccessorDeclSyntax] {
-        let (name, type, value) = try self.propertyComponents(from: declaration)
-        let lockFunctionName = self.lockFunctionName(node: node)
+        let lockType = self.lockType(from: node)
+        let (name, type, value) = try self.propertyComponents(
+            from: declaration,
+            with: lockType
+        )
+        let lockFunctionName = self.lockFunctionName(lockType: lockType)
 
         let getAccessor = try self.lockedPropertyGetAccessor(
             propertyName: name,
@@ -39,7 +43,7 @@ extension LockedMacro: AccessorMacro {
         }
 
         let initAccessor = self.lockedPropertyInitAccessor(
-            node: node,
+            lockType: lockType,
             type: type,
             propertyName: name
         )
@@ -67,13 +71,13 @@ extension LockedMacro: AccessorMacro {
     /// ```
     ///
     /// - Parameters:
-    ///   - node: The node from which to determine the `LockType`.
+    ///   - lockType: The type of lock to use.
     ///   - type: The type of the property being locked.
     ///   - propertyName: The name of the property being locked.
     /// - Returns: An `init` accessor for a locked property with the provided
     ///   `propertyName`.
     private static func lockedPropertyInitAccessor(
-        node: AttributeSyntax,
+        lockType: LockType,
         type: some TypeSyntaxProtocol,
         propertyName: TokenSyntax
     ) -> AccessorDeclSyntax {
@@ -135,7 +139,7 @@ extension LockedMacro: AccessorMacro {
 
                 // OSAllocatedUnfairLock(...: initialValue)
                 self.osAllocatedUnfairLockInitialization(
-                    node: node,
+                    lockType: lockType,
                     type: type,
                     value: DeclReferenceExprSyntax(baseName: initialValue)
                 )
@@ -211,15 +215,15 @@ extension LockedMacro: AccessorMacro {
 
     // MARK: Lock Function
 
-    /// Returns the `withLock` function name associated with the `LockType`
-    /// parsed from the provided `node`.
+    /// Returns the `withLock` function name associated with the provided
+    /// `lockType`.
     ///
-    /// - Parameter node: The node from which to determine the `withLock`
-    ///   function name.
-    /// - Returns: The `withLock` function name associated with the `LockType`
-    ///   parsed from the provided `node`.
-    private static func lockFunctionName(node: AttributeSyntax) -> TokenSyntax {
-        switch self.lockType(from: node) {
+    /// - Parameter lockType: The type of lock to use to determine the
+    ///   `withLock` function name.
+    /// - Returns: The `withLock` function name associated with the provided
+    ///   `lockType`.
+    private static func lockFunctionName(lockType: LockType) -> TokenSyntax {
+        switch lockType {
         case .checked:
             .identifier("withLock")
         case .unchecked:

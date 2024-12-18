@@ -19,7 +19,11 @@ extension LockedMacro: PeerMacro {
         providingPeersOf declaration: some DeclSyntaxProtocol,
         in context: some MacroExpansionContext
     ) throws -> [DeclSyntax] {
-        let (name, type, value) = try self.propertyComponents(from: declaration)
+        let lockType = self.lockType(from: node)
+        let (name, type, value) = try self.propertyComponents(
+            from: declaration,
+            with: lockType
+        )
         let pattern = IdentifierPatternSyntax(identifier: "_\(name)")
 
         let binding: PatternBindingSyntax
@@ -27,7 +31,7 @@ extension LockedMacro: PeerMacro {
         if let value {
             // OSAllocatedUnfairLock<PropertyType>(...: value)
             let osAllocatedUnfairLockInitialization = self.osAllocatedUnfairLockInitialization(
-                node: node,
+                lockType: lockType,
                 type: type,
                 value: value
             )
