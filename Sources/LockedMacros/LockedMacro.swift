@@ -82,6 +82,20 @@ public struct LockedMacro {
         let type = try self.type(from: binding)
         let value = binding.initializer?.value.trimmed
 
+        if lockType == .ifAvailableChecked || lockType == .ifAvailableUnchecked {
+            var isTypeOptional = type.is(OptionalTypeSyntax.self)
+
+            if !isTypeOptional, let identifierType = type.as(IdentifierTypeSyntax.self) {
+                let identifierTypeName = identifierType.name.trimmed
+
+                isTypeOptional = identifierTypeName.tokenKind == .identifier("Optional")
+            }
+
+            guard isTypeOptional else {
+                throw LockedMacroError.ifAvailableLockRequiresOptionalType
+            }
+        }
+
         return (name, type, value)
     }
 

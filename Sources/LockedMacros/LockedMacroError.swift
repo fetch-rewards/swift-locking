@@ -35,6 +35,11 @@ enum LockedMacroError: Error, CaseIterable, CustomStringConvertible {
     /// not have a parsable type.
     case bindingPatternMustHaveTypeInformation
 
+    /// The macro was applied with a ``LockType`` of either `ifAvailableChecked`
+    /// or `ifAvailableUnchecked` to a property declaration with a binding that
+    /// does not have an optional type.
+    case ifAvailableLockRequiresOptionalType
+
     // MARK: Properties
 
     var description: String {
@@ -51,6 +56,11 @@ enum LockedMacroError: Error, CaseIterable, CustomStringConvertible {
             "@Locked property declaration binding pattern must be identifier pattern."
         case .bindingPatternMustHaveTypeInformation:
             "@Locked property declaration binding must have type information."
+        case .ifAvailableLockRequiresOptionalType:
+            """
+            @Locked(.ifAvailableChecked) and @Locked(.ifAvailableUnchecked) \
+            property declaration bindings must have an optional type.
+            """
         }
     }
 }

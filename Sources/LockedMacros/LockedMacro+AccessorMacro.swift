@@ -27,6 +27,7 @@ extension LockedMacro: AccessorMacro {
         let lockFunctionName = self.lockFunctionName(lockType: lockType)
 
         let getAccessor = try self.lockedPropertyGetAccessor(
+            lockType: lockType,
             propertyName: name,
             lockFunctionName: lockFunctionName
         )
@@ -160,20 +161,66 @@ extension LockedMacro: AccessorMacro {
     /// ```
     ///
     /// - Parameters:
+    ///   - lockType: The type of lock to use.
     ///   - propertyName: The name of the property being locked.
     ///   - lockFunctionName: The name of the `withLock` function.
     /// - Returns: A `get` accessor for a locked property with the provided
     ///   `propertyName`.
     private static func lockedPropertyGetAccessor(
+        lockType: LockType,
         propertyName: TokenSyntax,
         lockFunctionName: TokenSyntax
     ) throws -> AccessorDeclSyntax {
         try AccessorDeclSyntax(accessorSpecifier: .keyword(.get)) {
-            try self.backingPropertyWithLockFunctionCallExpression(
-                propertyName: propertyName,
-                lockFunctionName: lockFunctionName
-            ) {
-                DeclReferenceExprSyntax(baseName: propertyName)
+            switch lockType {
+            case .checked, .unchecked:
+                try self.backingPropertyWithLockFunctionCallExpression(
+                    propertyName: propertyName,
+                    lockFunctionName: lockFunctionName
+                ) {
+                    DeclReferenceExprSyntax(baseName: propertyName)
+                }
+            case .ifAvailableChecked, .ifAvailableUnchecked:
+                TryExprSyntax(
+                    tryKeyword: .keyword(.try),
+                    questionOrExclamationMark: .postfixQuestionMarkToken(),
+                    expression: try self.backingPropertyWithLockFunctionCallExpression(
+                        propertyName: propertyName,
+                        lockFunctionName: lockFunctionName
+                    ) {
+                        GuardStmtSyntax(
+                            guardKeyword: .keyword(.guard),
+                            conditions: ConditionElementListSyntax {
+                                ConditionElementSyntax(
+                                    condition: .optionalBinding(
+                                        OptionalBindingConditionSyntax(
+                                            bindingSpecifier: .keyword(.let),
+                                            pattern: IdentifierPatternSyntax(
+                                                identifier: propertyName
+                                            )
+                                        )
+                                    )
+                                )
+                            }
+                        ) {
+                            ThrowStmtSyntax(
+                                expression: MemberAccessExprSyntax(
+                                    base: DeclReferenceExprSyntax(
+                                        baseName: .identifier("LockedError")
+                                    ),
+                                    period: .periodToken(),
+                                    name: .identifier("withLockIfAvailableValueIsNil")
+                                )
+                            )
+                        }
+
+                        ReturnStmtSyntax(
+                            expression: DeclReferenceExprSyntax(
+                                baseName: propertyName
+                            )
+                        )
+                    }
+                )
             }
         }
     }
