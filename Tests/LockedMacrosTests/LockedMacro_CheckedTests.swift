@@ -10,14 +10,15 @@ import LockedMacros
 import SwiftSyntax
 import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
-import SwiftSyntaxMacrosTestSupport
-import XCTest
+import SwiftSyntaxMacrosGenericTestSupport
+import Testing
 
-final class LockedMacro_CheckedTests: XCTestCase {
+struct LockedMacro_CheckedTests {
 
     // MARK: Explicit Type Tests
 
-    func testCheckedLockWithExplicitTypeAndInitialValue() {
+    @Test
+    func checkedLockWithExplicitTypeAndInitialValue() {
         assertMacroExpansion(
             """
             class Locks {
@@ -48,7 +49,8 @@ final class LockedMacro_CheckedTests: XCTestCase {
         )
     }
 
-    func testCheckedLockWithExplicitTypeAndNoInitialValue() {
+    @Test
+    func checkedLockWithExplicitTypeAndNoInitialValue() {
         assertMacroExpansion(
             """
             class Locks {
@@ -85,7 +87,8 @@ final class LockedMacro_CheckedTests: XCTestCase {
 
     // MARK: Function Call Type Tests
 
-    func testCheckedLockWithFunctionCallType() {
+    @Test
+    func checkedLockWithFunctionCallType() {
         assertMacroExpansion(
             """
             class Locks {
@@ -118,7 +121,8 @@ final class LockedMacro_CheckedTests: XCTestCase {
 
     // MARK: Member Access Type Tests
 
-    func testCheckedLockWithMemberAccessType() {
+    @Test
+    func checkedLockWithMemberAccessType() {
         assertMacroExpansion(
             """
             class Locks {
