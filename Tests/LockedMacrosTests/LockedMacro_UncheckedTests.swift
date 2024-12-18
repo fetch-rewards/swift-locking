@@ -7,9 +7,6 @@
 
 #if canImport(LockedMacros)
 import LockedMacros
-import SwiftSyntax
-import SwiftSyntaxBuilder
-import SwiftSyntaxMacros
 import SwiftSyntaxMacrosGenericTestSupport
 import Testing
 

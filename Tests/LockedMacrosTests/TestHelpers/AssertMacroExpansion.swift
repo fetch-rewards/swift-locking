@@ -11,9 +11,7 @@
 #if canImport(LockedMacros)
 import LockedMacros
 import SwiftSyntaxMacroExpansion
-import SwiftSyntaxMacros
 import SwiftSyntaxMacrosGenericTestSupport
-import SwiftSyntaxSugar
 import Testing
 
 func assertMacroExpansion(
