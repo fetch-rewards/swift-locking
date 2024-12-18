@@ -17,4 +17,6 @@ public enum LockType: String {
 
     /// An unchecked unfair lock.
     case unchecked
+    case ifAvailableChecked
+    case ifAvailableUnchecked
 }

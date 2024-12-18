@@ -167,9 +167,9 @@ public struct LockedMacro {
         lockType: LockType
     ) -> TokenSyntax {
         switch lockType {
-        case .checked:
+        case .checked, .ifAvailableChecked:
             .identifier("initialState", leadingTrivia: .newline)
-        case .unchecked:
+        case .unchecked, .ifAvailableUnchecked:
             .identifier("uncheckedState", leadingTrivia: .newline)
         }
     }
