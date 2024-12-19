@@ -46,7 +46,7 @@ public struct LockedMacro {
     /// the provided declaration.
     ///
     /// - Parameters:
-    ///   - declaration: The declaration from which to parse property
+    ///   - declaration: The declaration from which to parse the property
     ///     components.
     ///   - lockType: The type of lock applied to the property declaration.
     /// - Returns: Property components (`name`, `type`, and `value`) parsed from
