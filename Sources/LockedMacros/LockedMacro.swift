@@ -18,7 +18,7 @@ public struct LockedMacro {
     ///
     /// - Parameter node: The node from which to determine the `LockType`.
     /// - Returns: The `LockType` parsed from the provided `node`.
-    static func lockType(from node: AttributeSyntax) -> LockType {
+    static func lockType(from node: AttributeSyntax) throws -> LockType {
         let lockTypeRawValue = node
             .arguments?
             .as(LabeledExprListSyntax.self)?
@@ -30,11 +30,11 @@ public struct LockedMacro {
             .trimmed
             .text
 
-        guard 
+        guard
             let lockTypeRawValue,
             let lockType = LockType(rawValue: lockTypeRawValue)
         else {
-            return .checked
+            throw LockedMacroError.invalidLockType
         }
 
         return lockType
@@ -45,34 +45,37 @@ public struct LockedMacro {
     /// Returns property components (`name`, `type`, and `value`) parsed from
     /// the provided declaration.
     ///
-    /// - Parameter declaration: The declaration from which to parse property
-    ///   components.
+    /// - Parameters:
+    ///   - declaration: The declaration from which to parse the property
+    ///     components.
+    ///   - lockType: The type of lock applied to the property declaration.
     /// - Returns: Property components (`name`, `type`, and `value`) parsed from
     ///   the provided declaration.
     static func propertyComponents(
-        from declaration: some DeclSyntaxProtocol
+        from declaration: some DeclSyntaxProtocol,
+        with lockType: LockType
     ) throws -> (
         name: TokenSyntax,
         type: any TypeSyntaxProtocol,
         value: (any ExprSyntaxProtocol)?
     ) {
         guard let propertyDeclaration = declaration.as(VariableDeclSyntax.self) else {
-            throw LockedError.declarationMustBeProperty
+            throw LockedMacroError.declarationMustBeProperty
         }
 
         guard propertyDeclaration.bindingSpecifier.tokenKind == .keyword(.var) else {
-            throw LockedError.propertyDeclarationBindingSpecifierMustBeVar
+            throw LockedMacroError.propertyDeclarationBindingSpecifierMustBeVar
         }
 
         guard
             propertyDeclaration.bindings.count == 1,
             let binding = propertyDeclaration.bindings.first
         else {
-            throw LockedError.propertyDeclarationMustHaveExactlyOneBinding
+            throw LockedMacroError.propertyDeclarationMustHaveExactlyOneBinding
         }
 
         guard let pattern = binding.pattern.as(IdentifierPatternSyntax.self) else {
-            throw LockedError.bindingPatternMustBeIdentifierPattern
+            throw LockedMacroError.bindingPatternMustBeIdentifierPattern
         }
 
         let name = pattern.identifier.trimmed
@@ -90,7 +93,7 @@ public struct LockedMacro {
     /// - Returns: A type parsed from the provided binding.
     private static func type(
         from binding: PatternBindingSyntax
-    ) throws -> any TypeSyntaxProtocol {
+    ) throws -> TypeSyntax {
         if let type = binding.typeAnnotation?.type {
             return type.trimmed
         } else if
@@ -99,15 +102,15 @@ public struct LockedMacro {
             ),
             let base = memberAccessExpression.base
         {
-            return TypeSyntax(stringLiteral: base.trimmedDescription)
+            return "\(base.trimmed)"
         } else if let functionCallExpression = binding.initializer?.value.as(
             FunctionCallExprSyntax.self
         ) {
             let calledExpression = functionCallExpression.calledExpression
 
-            return TypeSyntax(stringLiteral: calledExpression.trimmedDescription)
+            return "\(calledExpression.trimmed)"
         } else {
-            throw LockedError.bindingPatternMustHaveTypeInformation
+            throw LockedMacroError.bindingPatternMustHaveTypeInformation
         }
     }
 
@@ -141,35 +144,35 @@ public struct LockedMacro {
     }
 
     /// Returns the `OSAllocatedUnfairLock` initializer label to use based on
-    /// the `LockType` parsed from the provided `node`.
+    /// the provided `lockType`.
     ///
-    /// - Parameter node: The node from which to determine the `LockType`.
+    /// - Parameter lockType: The type of lock to use.
     /// - Returns: The `OSAllocatedUnfairLock` initializer label to use based on
-    ///   the `LockType` parsed from the provided `node`.
+    ///   the provided `lockType`.
     static func osAllocatedUnfairLockInitializerLabel(
-        node: AttributeSyntax
+        lockType: LockType
     ) -> TokenSyntax {
-        switch self.lockType(from: node) {
-        case .checked, .ifAvailableChecked:
+        switch lockType {
+        case .checked:
             .identifier("initialState", leadingTrivia: .newline)
-        case .unchecked, .ifAvailableUnchecked:
+        case .unchecked:
             .identifier("uncheckedState", leadingTrivia: .newline)
         }
     }
 
     /// Returns an `OSAllocatedUnfairLock` initialization expression with the
     /// provided `type` and `value` and an initializer label determined based on
-    /// the `LockType` parsed from the provided `node`.
+    /// the provided `lockType`.
     ///
     /// - Parameters:
-    ///   - node: The node from which to determine the `LockType`.
+    ///   - lockType: The type of lock to use.
     ///   - type: The type with which to specialize `OSAllocatedUnfairLock`.
     ///   - value: The value with which to initialize `OSAllocatedUnfairLock`.
     /// - Returns: An `OSAllocatedUnfairLock` initialization expression with the
     ///   provided `type` and `value` and an initializer label determined based
-    ///   on the `LockType` parsed from the provided `node`.
+    ///   on the provided `lockType`.
     static func osAllocatedUnfairLockInitialization(
-        node: AttributeSyntax,
+        lockType: LockType,
         type: some TypeSyntaxProtocol,
         value: some ExprSyntaxProtocol
     ) -> FunctionCallExprSyntax {
@@ -180,7 +183,9 @@ public struct LockedMacro {
             leftParen: .leftParenToken(),
             arguments: LabeledExprListSyntax {
                 LabeledExprSyntax(
-                    label: self.osAllocatedUnfairLockInitializerLabel(node: node),
+                    label: self.osAllocatedUnfairLockInitializerLabel(
+                        lockType: lockType
+                    ),
                     colon: .colonToken(),
                     expression: value
                 )

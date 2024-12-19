@@ -1,5 +1,5 @@
 //
-//  LockedError.swift
+//  LockedMacroError.swift
 //  LockedMacros
 //
 //  Created by Gray Campbell on 11/1/24.
@@ -8,9 +8,12 @@
 import Foundation
 
 /// An error thrown by `LockedMacro`.
-enum LockedError: Error, CustomStringConvertible {
+enum LockedMacroError: Error, CustomStringConvertible {
 
     // MARK: Cases
+
+    /// The macro was applied with an invalid ``LockType``.
+    case invalidLockType
 
     /// The macro was applied to a declaration other than a property
     /// declaration.
@@ -36,6 +39,8 @@ enum LockedError: Error, CustomStringConvertible {
 
     var description: String {
         switch self {
+        case .invalidLockType:
+            "Invalid LockType."
         case .declarationMustBeProperty:
             "@Locked can only be applied to property declarations."
         case .propertyDeclarationBindingSpecifierMustBeVar:

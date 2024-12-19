@@ -7,12 +7,14 @@
 
 import Foundation
 
+/// A type of unfair lock.
 enum LockType: String {
 
     // MARK: Cases
 
+    /// A checked unfair lock.
     case checked
+
+    /// An unchecked unfair lock.
     case unchecked
-    case ifAvailableChecked
-    case ifAvailableUnchecked
 }
