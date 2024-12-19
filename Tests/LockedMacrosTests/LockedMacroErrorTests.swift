@@ -1,8 +1,8 @@
 //
 //  LockedMacroErrorTests.swift
-//  LockedMacrosTests
 //
-//  Created by Gray Campbell on 12/19/24.
+//  Created by Gray Campbell.
+//  Copyright © 2024 Fetch.
 //
 
 #if canImport(LockedMacros)

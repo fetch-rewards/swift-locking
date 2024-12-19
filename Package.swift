@@ -1,7 +1,7 @@
 // swift-tools-version: 6.0
 
-import PackageDescription
 import CompilerPluginSupport
+import PackageDescription
 
 let package = Package(
     name: "Locked",
@@ -80,7 +80,7 @@ extension SwiftSetting {
     )
 }
 
-extension Array where Element == SwiftSetting {
+extension [SwiftSetting] {
 
     /// Default Swift settings to enable for targets.
     static let `default`: [SwiftSetting] = [
