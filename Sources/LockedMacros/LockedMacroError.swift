@@ -8,7 +8,7 @@
 import Foundation
 
 /// An error thrown by `LockedMacro`.
-enum LockedMacroError: Error, CustomStringConvertible {
+enum LockedMacroError: Error, CaseIterable, CustomStringConvertible {
 
     // MARK: Cases
 
