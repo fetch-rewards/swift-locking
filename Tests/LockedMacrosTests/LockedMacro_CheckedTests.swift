@@ -6,9 +6,9 @@
 //
 
 #if canImport(LockedMacros)
-import LockedMacros
 import SwiftSyntaxMacrosGenericTestSupport
 import Testing
+@testable import LockedMacros
 
 struct LockedMacro_CheckedTests {
 
@@ -147,6 +147,88 @@ struct LockedMacro_CheckedTests {
                 )
             }
             """
+        )
+    }
+
+    // MARK: Error Tests
+
+    @Test
+    func checkedLockWithNonPropertyDeclaration() async throws {
+        let diagnostic = diagnostic(
+            error: .declarationMustBeProperty,
+            line: 2,
+            column: 5
+        )
+
+        assertMacroExpansion(
+            """
+            class Locks {
+                @Locked(.checked)
+                func count() {}
+            }
+            """,
+            expandedSource: """
+            class Locks {
+                func count() {}
+            }
+            """,
+            diagnostics: [
+                diagnostic,
+            ]
+        )
+    }
+
+    @Test
+    func checkedLockWithLetPropertyDeclaration() {
+        let diagnostic = diagnostic(
+            error: .propertyDeclarationBindingSpecifierMustBeVar,
+            line: 2,
+            column: 5
+        )
+
+        assertMacroExpansion(
+            """
+            class Locks {
+                @Locked(.checked)
+                let count: Int
+            }
+            """,
+            expandedSource: """
+            class Locks {
+                let count: Int
+            }
+            """,
+            diagnostics: [
+                diagnostic,
+                diagnostic,
+            ]
+        )
+    }
+
+    @Test
+    func checkedLockWithNoTypeInformation() {
+        let diagnostic = diagnostic(
+            error: .bindingPatternMustHaveTypeInformation,
+            line: 2,
+            column: 5
+        )
+
+        assertMacroExpansion(
+            """
+            class Locks {
+                @Locked(.checked)
+                var count
+            }
+            """,
+            expandedSource: """
+            class Locks {
+                var count
+            }
+            """,
+            diagnostics: [
+                diagnostic,
+                diagnostic,
+            ]
         )
     }
 }

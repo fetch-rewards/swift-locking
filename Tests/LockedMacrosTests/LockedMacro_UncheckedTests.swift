@@ -6,9 +6,9 @@
 //
 
 #if canImport(LockedMacros)
-import LockedMacros
 import SwiftSyntaxMacrosGenericTestSupport
 import Testing
+@testable import LockedMacros
 
 struct LockedMacro_UncheckedTests {
 
@@ -147,6 +147,88 @@ struct LockedMacro_UncheckedTests {
                 )
             }
             """
+        )
+    }
+
+    // MARK: Error Tests
+
+    @Test
+    func uncheckedLockWithNonPropertyDeclaration() async throws {
+        let diagnostic = diagnostic(
+            error: .declarationMustBeProperty,
+            line: 2,
+            column: 5
+        )
+
+        assertMacroExpansion(
+            """
+            class Locks {
+                @Locked(.unchecked)
+                func count() {}
+            }
+            """,
+            expandedSource: """
+            class Locks {
+                func count() {}
+            }
+            """,
+            diagnostics: [
+                diagnostic,
+            ]
+        )
+    }
+
+    @Test
+    func uncheckedLockWithLetPropertyDeclaration() {
+        let diagnostic = diagnostic(
+            error: .propertyDeclarationBindingSpecifierMustBeVar,
+            line: 2,
+            column: 5
+        )
+
+        assertMacroExpansion(
+            """
+            class Locks {
+                @Locked(.unchecked)
+                let count: Int
+            }
+            """,
+            expandedSource: """
+            class Locks {
+                let count: Int
+            }
+            """,
+            diagnostics: [
+                diagnostic,
+                diagnostic,
+            ]
+        )
+    }
+
+    @Test
+    func uncheckedLockWithNoTypeInformation() {
+        let diagnostic = diagnostic(
+            error: .bindingPatternMustHaveTypeInformation,
+            line: 2,
+            column: 5
+        )
+
+        assertMacroExpansion(
+            """
+            class Locks {
+                @Locked(.unchecked)
+                var count
+            }
+            """,
+            expandedSource: """
+            class Locks {
+                var count
+            }
+            """,
+            diagnostics: [
+                diagnostic,
+                diagnostic,
+            ]
         )
     }
 }
