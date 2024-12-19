@@ -1,8 +1,8 @@
 //
 //  Diagnostic.swift
-//  Locked
 //
-//  Created by Gray Campbell on 12/18/24.
+//  Created by Gray Campbell.
+//  Copyright © 2024 Fetch.
 //
 
 #if canImport(LockedMacros)

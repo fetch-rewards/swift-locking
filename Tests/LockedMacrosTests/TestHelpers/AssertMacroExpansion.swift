@@ -1,8 +1,8 @@
 //
 //  AssertMacroExpansion.swift
-//  LockedMacrosTests
 //
-//  Created by Gray Campbell on 12/17/24.
+//  Created by Gray Campbell.
+//  Copyright © 2024 Fetch.
 //
 
 // Macro implementations build for the host, so the corresponding module is not
