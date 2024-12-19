@@ -1,8 +1,8 @@
 //
 //  LockType.swift
-//  LockedMacros
 //
-//  Created by Gray Campbell on 7/21/24.
+//  Created by Gray Campbell.
+//  Copyright © 2024 Fetch.
 //
 
 import Foundation

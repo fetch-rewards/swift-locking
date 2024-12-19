@@ -1,8 +1,8 @@
 //
 //  LockedMacro+AccessorMacro.swift
-//  LockedMacros
 //
-//  Created by Gray Campbell on 7/21/24.
+//  Created by Gray Campbell.
+//  Copyright © 2024 Fetch.
 //
 
 public import SwiftSyntax
@@ -251,8 +251,7 @@ extension LockedMacro: AccessorMacro {
     private static func backingPropertyWithLockFunctionCallExpression(
         propertyName: TokenSyntax,
         lockFunctionName: TokenSyntax,
-        @CodeBlockItemListBuilder
-        lockClosureStatementsBuilder: () throws -> CodeBlockItemListSyntax
+        @CodeBlockItemListBuilder lockClosureStatementsBuilder: () throws -> CodeBlockItemListSyntax
     ) throws -> FunctionCallExprSyntax {
         // self._propertyName
         let backingPropertyAccessExpression = MemberAccessExprSyntax(

@@ -1,8 +1,8 @@
 //
 //  LockedMacro_CheckedTests.swift
-//  LockedMacrosTests
 //
-//  Created by Gray Campbell on 12/17/24.
+//  Created by Gray Campbell.
+//  Copyright © 2024 Fetch.
 //
 
 #if canImport(LockedMacros)
@@ -37,7 +37,7 @@ struct LockedMacro_CheckedTests {
                         }
                     }
                 }
-            
+
                 private let _count = OSAllocatedUnfairLock<Int>(
                     initialState: .zero
                 )
@@ -75,7 +75,7 @@ struct LockedMacro_CheckedTests {
                         }
                     }
                 }
-            
+
                 private let _count: OSAllocatedUnfairLock<Int>
             }
             """
@@ -107,7 +107,7 @@ struct LockedMacro_CheckedTests {
                         }
                     }
                 }
-            
+
                 private let _count = OSAllocatedUnfairLock<Int>(
                     initialState: Int(1)
                 )
@@ -141,7 +141,7 @@ struct LockedMacro_CheckedTests {
                         }
                     }
                 }
-            
+
                 private let _count = OSAllocatedUnfairLock<Int>(
                     initialState: Int.zero
                 )

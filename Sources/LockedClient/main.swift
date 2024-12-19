@@ -1,8 +1,8 @@
 //
 //  main.swift
-//  LockedClient
 //
-//  Created by Gray Campbell on 7/20/24.
+//  Created by Gray Campbell.
+//  Copyright © 2024 Fetch.
 //
 
 import Locked
