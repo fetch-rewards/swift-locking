@@ -19,7 +19,7 @@ extension LockedMacro: PeerMacro {
         providingPeersOf declaration: some DeclSyntaxProtocol,
         in context: some MacroExpansionContext
     ) throws -> [DeclSyntax] {
-        let lockType = self.lockType(from: node)
+        let lockType = try self.lockType(from: node)
         let (name, type, value) = try self.propertyComponents(
             from: declaration,
             with: lockType

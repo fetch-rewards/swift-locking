@@ -12,6 +12,9 @@ enum LockedMacroError: Error, CustomStringConvertible {
 
     // MARK: Cases
 
+    /// The macro was applied with an invalid ``LockType``.
+    case invalidLockType
+
     /// The macro was applied to a declaration other than a property
     /// declaration.
     case declarationMustBeProperty
@@ -36,6 +39,8 @@ enum LockedMacroError: Error, CustomStringConvertible {
 
     var description: String {
         switch self {
+        case .invalidLockType:
+            "Invalid LockType."
         case .declarationMustBeProperty:
             "@Locked can only be applied to property declarations."
         case .propertyDeclarationBindingSpecifierMustBeVar:

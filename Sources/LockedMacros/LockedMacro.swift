@@ -18,7 +18,7 @@ public struct LockedMacro {
     ///
     /// - Parameter node: The node from which to determine the `LockType`.
     /// - Returns: The `LockType` parsed from the provided `node`.
-    static func lockType(from node: AttributeSyntax) -> LockType {
+    static func lockType(from node: AttributeSyntax) throws -> LockType {
         let lockTypeRawValue = node
             .arguments?
             .as(LabeledExprListSyntax.self)?
@@ -30,11 +30,11 @@ public struct LockedMacro {
             .trimmed
             .text
 
-        guard 
+        guard
             let lockTypeRawValue,
             let lockType = LockType(rawValue: lockTypeRawValue)
         else {
-            return .checked
+            throw LockedMacroError.invalidLockType
         }
 
         return lockType
