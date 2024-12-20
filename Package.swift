@@ -29,7 +29,7 @@ let package = Package(
         ),
         .package(
             url: "git@github.com:fetch-rewards/SwiftSyntaxSugar.git",
-            revision: "abfb9241a6efb9b329c6b056e739422d2c98d8d7"
+            revision: "3a5739eccceb1fcc1362f667748f7a16e8ddda51"
         ),
     ],
     targets: [
