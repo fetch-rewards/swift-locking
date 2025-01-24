@@ -12,34 +12,6 @@ import SwiftSyntaxSugar
 
 public struct LockedMacro {
 
-    // MARK: Lock Type
-
-    /// Returns the `LockType` parsed from the provided `node`.
-    ///
-    /// - Parameter node: The node from which to determine the `LockType`.
-    /// - Returns: The `LockType` parsed from the provided `node`.
-    static func lockType(from node: AttributeSyntax) throws -> LockType {
-        let lockTypeRawValue = node
-            .arguments?
-            .as(LabeledExprListSyntax.self)?
-            .first?
-            .expression
-            .as(MemberAccessExprSyntax.self)?
-            .declName
-            .baseName
-            .trimmed
-            .text
-
-        guard
-            let lockTypeRawValue,
-            let lockType = LockType(rawValue: lockTypeRawValue)
-        else {
-            throw LockedMacroError.invalidLockType
-        }
-
-        return lockType
-    }
-
     // MARK: Property Components
 
     /// Returns property components (`name`, `type`, and `value`) parsed from
@@ -60,57 +32,62 @@ public struct LockedMacro {
         value: (any ExprSyntaxProtocol)?
     ) {
         guard let propertyDeclaration = declaration.as(VariableDeclSyntax.self) else {
-            throw LockedMacroError.declarationMustBeProperty
+            throw MacroError.canOnlyBeAppliedToPropertyDeclarations
         }
 
         guard propertyDeclaration.bindingSpecifier.tokenKind == .keyword(.var) else {
-            throw LockedMacroError.propertyDeclarationBindingSpecifierMustBeVar
+            throw MacroError.canOnlyBeAppliedToPropertyDeclarationsWithVarBindingSpecifier
         }
 
         guard
             propertyDeclaration.bindings.count == 1,
-            let binding = propertyDeclaration.bindings.first
+            let propertyBinding = propertyDeclaration.bindings.first
         else {
-            throw LockedMacroError.propertyDeclarationMustHaveExactlyOneBinding
+            throw MacroError.canOnlyBeAppliedToSingleBindingPropertyDeclarations
         }
 
-        guard let pattern = binding.pattern.as(IdentifierPatternSyntax.self) else {
-            throw LockedMacroError.bindingPatternMustBeIdentifierPattern
+        guard
+            let propertyBindingPattern = propertyBinding.pattern.as(
+                IdentifierPatternSyntax.self
+            )
+        else {
+            throw MacroError.canOnlyBeAppliedToPropertyDeclarationsWithIdentifierBindingPattern
         }
 
-        let name = pattern.identifier.trimmed
-        let type = try self.type(from: binding)
-        let value = binding.initializer?.value.trimmed
+        let name = propertyBindingPattern.identifier.trimmed
+        let type = try self.type(from: propertyBinding)
+        let value = propertyBinding.initializer?.value.trimmed
 
         return (name, type, value)
     }
 
-    /// Returns a type parsed from the provided binding.
+    /// Returns a type parsed from the provided `propertyBinding`.
     ///
-    /// - Parameter binding: The binding from which to parse the type.
+    /// - Parameter propertyBinding: The property binding from which to parse
+    ///   the type.
     /// - Throws: An error if a type could not be parsed from the provided
-    ///   binding.
-    /// - Returns: A type parsed from the provided binding.
+    ///   `propertyBinding`.
+    /// - Returns: A type parsed from the provided `propertyBinding`.
     private static func type(
-        from binding: PatternBindingSyntax
+        from propertyBinding: PatternBindingSyntax
     ) throws -> TypeSyntax {
-        if let type = binding.typeAnnotation?.type {
+        if let type = propertyBinding.typeAnnotation?.type {
             return type.trimmed
         } else if
-            let memberAccessExpression = binding.initializer?.value.as(
+            let memberAccessExpression = propertyBinding.initializer?.value.as(
                 MemberAccessExprSyntax.self
             ),
             let base = memberAccessExpression.base
         {
             return "\(base.trimmed)"
-        } else if let functionCallExpression = binding.initializer?.value.as(
+        } else if let functionCallExpression = propertyBinding.initializer?.value.as(
             FunctionCallExprSyntax.self
         ) {
             let calledExpression = functionCallExpression.calledExpression
 
             return "\(calledExpression.trimmed)"
         } else {
-            throw LockedMacroError.bindingPatternMustHaveTypeInformation
+            throw MacroError.unableToParseType
         }
     }
 
@@ -120,7 +97,7 @@ public struct LockedMacro {
     ///
     /// - Returns: The type name for `OSAllocatedUnfairLock`.
     static func osAllocatedUnfairLockTypeName() -> TokenSyntax {
-        .identifier("OSAllocatedUnfairLock")
+        "OSAllocatedUnfairLock"
     }
 
     /// Returns the expression syntax for `OSAllocatedUnfairLock` specialized
@@ -177,9 +154,7 @@ public struct LockedMacro {
         value: some ExprSyntaxProtocol
     ) -> FunctionCallExprSyntax {
         FunctionCallExprSyntax(
-            calledExpression: self.osAllocatedUnfairLockExprSyntax(
-                type: type
-            ),
+            calledExpression: self.osAllocatedUnfairLockExprSyntax(type: type),
             leftParen: .leftParenToken(),
             arguments: LabeledExprListSyntax {
                 LabeledExprSyntax(

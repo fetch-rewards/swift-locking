@@ -12,7 +12,7 @@ import SwiftSyntaxMacrosGenericTestSupport
 
 func diagnostic(
     id: MessageID? = nil,
-    error: LockedMacroError,
+    error: LockedMacro.MacroError,
     line: Int,
     column: Int,
     severity: DiagnosticSeverity = .error,
