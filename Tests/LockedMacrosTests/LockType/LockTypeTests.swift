@@ -36,12 +36,8 @@ struct LockTypeTests {
             expression: MemberAccessExprSyntax(name: "invalidLockType")
         )
 
-        #expect {
+        #expect(throws: SUT.ParsingError.unableToParseLockType) {
             try SUT(argument: argument)
-        } throws: { error in
-            let parsingError = try #require(error as? SUT.ParsingError)
-
-            return parsingError == .unableToParseLockType
         }
     }
 }
