@@ -19,12 +19,14 @@ extension LockedMacro: AccessorMacro {
         providingAccessorsOf declaration: some DeclSyntaxProtocol,
         in context: some MacroExpansionContext
     ) throws -> [AccessorDeclSyntax] {
-        let lockType = try self.lockType(from: node)
+        let macroArguments = try MacroArguments(node: node)
         let (name, type, value) = try self.propertyComponents(
             from: declaration,
-            with: lockType
+            with: macroArguments.lockType
         )
-        let lockFunctionName = self.lockFunctionName(lockType: lockType)
+        let lockFunctionName = self.lockFunctionName(
+            lockType: macroArguments.lockType
+        )
 
         let getAccessor = try self.lockedPropertyGetAccessor(
             propertyName: name,
@@ -43,7 +45,7 @@ extension LockedMacro: AccessorMacro {
         }
 
         let initAccessor = self.lockedPropertyInitAccessor(
-            lockType: lockType,
+            lockType: macroArguments.lockType,
             type: type,
             propertyName: name
         )
@@ -83,21 +85,19 @@ extension LockedMacro: AccessorMacro {
     ) -> AccessorDeclSyntax {
         // _propertyName
         let backingPropertyReference = DeclReferenceExprSyntax(
-            baseName: .identifier("_\(propertyName)")
+            baseName: "_\(propertyName)"
         )
 
         // @storageRestrictions(initializes: _propertyName)
         let attributes = AttributeListSyntax {
             AttributeSyntax(
                 atSign: .atSignToken(),
-                attributeName: IdentifierTypeSyntax(
-                    name: .identifier("storageRestrictions")
-                ),
+                attributeName: IdentifierTypeSyntax(name: "storageRestrictions"),
                 leftParen: .leftParenToken(),
                 arguments: .argumentList(
                     LabeledExprListSyntax {
                         LabeledExprSyntax(
-                            label: .identifier("initializes"),
+                            label: "initializes",
                             colon: .colonToken(),
                             expression: backingPropertyReference
                         )
@@ -108,15 +108,12 @@ extension LockedMacro: AccessorMacro {
         }
 
         // initialValue
-        let initialValue: TokenSyntax = .identifier("initialValue")
+        let initialValue: TokenSyntax = "initialValue"
 
         // @storageRestrictions(initializes: _propertyName) init(initialValue) { ... }
         return AccessorDeclSyntax(
             attributes: attributes,
-            accessorSpecifier: .keyword(
-                .`init`,
-                leadingTrivia: .newline
-            ),
+            accessorSpecifier: .keyword(.`init`, leadingTrivia: .newline),
             parameters: AccessorParametersSyntax(
                 leftParen: .leftParenToken(),
                 name: initialValue,
@@ -127,9 +124,7 @@ extension LockedMacro: AccessorMacro {
             SequenceExprSyntax {
                 // self._propertyName
                 MemberAccessExprSyntax(
-                    base: DeclReferenceExprSyntax(
-                        baseName: .keyword(.self)
-                    ),
+                    base: DeclReferenceExprSyntax(baseName: .keyword(.self)),
                     period: .periodToken(),
                     declName: backingPropertyReference
                 )
@@ -207,7 +202,7 @@ extension LockedMacro: AccessorMacro {
                 SequenceExprSyntax {
                     DeclReferenceExprSyntax(baseName: propertyName)
                     AssignmentExprSyntax(equal: .equalToken())
-                    DeclReferenceExprSyntax(baseName: .identifier("newValue"))
+                    DeclReferenceExprSyntax(baseName: "newValue")
                 }
             }
         }
@@ -225,9 +220,9 @@ extension LockedMacro: AccessorMacro {
     private static func lockFunctionName(lockType: LockType) -> TokenSyntax {
         switch lockType {
         case .checked:
-            .identifier("withLock")
+            "withLock"
         case .unchecked:
-            .identifier("withLockUnchecked")
+            "withLockUnchecked"
         }
     }
 
@@ -257,9 +252,7 @@ extension LockedMacro: AccessorMacro {
         let backingPropertyAccessExpression = MemberAccessExprSyntax(
             base: DeclReferenceExprSyntax(baseName: .keyword(.self)),
             period: .periodToken(),
-            declName: DeclReferenceExprSyntax(
-                baseName: .identifier("_\(propertyName)")
-            )
+            declName: DeclReferenceExprSyntax(baseName: "_\(propertyName)")
         )
 
         // self._propertyName.withLock
