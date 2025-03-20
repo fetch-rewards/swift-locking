@@ -25,11 +25,11 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/apple/swift-syntax.git",
-            from: "600.0.1"
+            exact: "600.0.0"
         ),
         .package(
             url: "git@github.com:fetch-rewards/SwiftSyntaxSugar.git",
-            revision: "54c294b9198d8a8abb7a228b933386ac726591e0"
+            revision: "0284c7bd20959bf069b7de56788756697a502ff2"
         ),
     ],
     targets: [
