@@ -9,10 +9,23 @@
 - [Example](#example)
 - [Installation](#installation)
 - [Usage](#usage)
+- [Macros](#macros)
+  - [`@Locked`](#locked)
 - [Contributing](#contributing)
 - [License](#license)
 
 ## Example
+
+```swift
+class Locks {
+    @Locked(.checked)
+    var count: Int
+
+    init(count: Int) {
+        self.count = count
+    }
+}
+```
 
 ## Installation
 
@@ -31,10 +44,97 @@ To add `swift-synchronization` to a Swift package manifest file:
 
 ## Usage
 
-- Import `Locked`:
-  ```swift
-  import Locked
-  ```
+Import `Locked`:
+```swift
+import Locked
+```
+
+Attach the `@Locked` macro to your property:
+```swift
+@Locked(.checked)
+var count: Int
+```
+
+## Macros
+
+`swift-synchronization` contains the Swift macro `@Locked`.
+
+### `@Locked`
+
+`@Locked` is an attached, peer and accessor macro that generates a private, protected, underscored backing property along 
+with accessors for reading from and writing to that backing property:
+```swift
+@Locked(.checked)
+var count: Int
+
+// Generates:
+
+var count: Int {
+    @storageRestrictions(initializes: _count)
+    init(initialValue) {
+        self._count = OSAllocatedUnfairLock<Int>(
+            initialState: initialValue
+        )
+    }
+    get {
+        self._count.withLock { count in
+            count
+        }
+    }
+    set {
+        self._count.withLock { count in
+            count = newValue
+        }
+    }
+}
+
+private let _count: OSAllocatedUnfairLock<Int>
+```
+
+The backing property uses `OSAllocatedUnfairLock` to synchronize access to its underlying data while the exposed property's 
+accessors allow consumers to interact with this data without interfacing directly with `OSAllocatedUnfairLock`'s API.
+
+> [!IMPORTANT]
+> The property to which `@Locked` is attached must be a `var` and have an explicit type:
+> ```swift
+> // Valid:
+> var count: Int = .zero
+> var count = Int.zero
+> var count = Int(1)
+>
+> // Invalid:
+> var count = 1
+> let count: Int = .zero
+> ```
+
+#### Default Value
+
+The property to which `@Locked` is attached can be defined **_with_** (`var count: Int = .zero`) or **_without_** (`var count: Int`)
+a default value. 
+
+Providing a default value (`var count: Int = .zero`) results in two generated accessors - `get` and `set`:
+```swift
+get {
+    self._count.withLock { count in
+        count
+    }
+}
+set {
+    self._count.withLock { count in
+        count = newValue
+    }
+}
+```
+
+Not providing a default value (`var count: Int`) results in an additional generated accessor - `init`:
+```swift
+@storageRestrictions(initializes: _count)
+init(initialValue) {
+    self._count = OSAllocatedUnfairLock<Int>(
+        initialState: initialValue
+    )
+}
+```
 
 ## Contributing
 
