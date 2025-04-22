@@ -33,7 +33,7 @@ jobs:
         run: swift test --enable-code-coverage
 
       - name: Gather code coverage
-        run: xcrun llvm-cov export -format="lcov" .build/debug/SwiftSynchronizationPackageTests.xctest/Contents/MacOS/SwiftSynchronizationPackageTests -instr-profile .build/debug/codecov/default.profdata > coverage_report.lcov
+        run: xcrun llvm-cov export -format="lcov" .build/debug/LockedPackageTests.xctest/Contents/MacOS/LockedPackageTests -instr-profile .build/debug/codecov/default.profdata > coverage_report.lcov
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
