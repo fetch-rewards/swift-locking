@@ -6,6 +6,7 @@ on:
     branches:
       - main
   pull_request:
+    types: [opened, reopened, synchronize]
     branches:
       - '*'
 
@@ -23,7 +24,13 @@ jobs:
         with:
           xcode-version: latest
 
-      - name: Install dependencies
+      - name: Install Brewfile dependencies
+        run: brew bundle install
+
+      - name: Run SwiftFormat in lint mode
+        run: swiftformat --lint .
+
+      - name: Install package dependencies
         run: swift package resolve
 
       - name: Build the package
@@ -33,7 +40,7 @@ jobs:
         run: swift test --enable-code-coverage
 
       - name: Gather code coverage
-        run: xcrun llvm-cov export -format="lcov" .build/debug/SwiftSynchronizationPackageTests.xctest/Contents/MacOS/SwiftSynchronizationPackageTests -instr-profile .build/debug/codecov/default.profdata > coverage_report.lcov
+        run: xcrun llvm-cov export -format="lcov" .build/debug/LockedPackageTests.xctest/Contents/MacOS/LockedPackageTests -instr-profile .build/debug/codecov/default.profdata > coverage_report.lcov
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
