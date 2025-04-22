@@ -72,6 +72,19 @@ is managing mutual exclusion for you.
 > let count: Int = .zero
 > ```
 
+> [!WARNING]
+> `@Locked` uses `OSAllocatedUnfairLock` to protect shared state. `OSAllocatedUnfairLock` is useful when you need fast, low-level mutual
+> exclusion and can manage the following limitations:
+> - **Thread Starvation**: Due to its unfair nature, some threads might experience indefinite delays in acquiring the lock under high
+>   contention.
+> - **Relative Operation Ordering**: The lock ensures mutual exclusion but doesn’t guarantee the order in which threads acquire the lock.
+>   This can lead to unexpected behavior when the sequence of operations matters.
+> - **Complex Synchronization Needs**: For scenarios requiring more intricate coordination (e.g., condition variables, read-write locks),
+>   `OSAllocatedUnfairLock` might not suffice.
+>
+> For more complex synchronization requirements or when fairness is crucial, consider using higher-level constructs provided by Swift
+> concurrency or Grand Central Dispatch.
+
 ## Macros
 
 `swift-synchronization` contains the Swift macro `@Locked`.
