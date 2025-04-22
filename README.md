@@ -136,6 +136,18 @@ init(initialValue) {
 }
 ```
 
+This `init` accessor allows you to assign a value to your property inside your object's initializer:
+```swift
+class Locks {
+    @Locked(.checked)
+    var count: Int
+
+    init(count: Int) {
+        self.count = count
+    }
+}
+```
+
 ## Contributing
 
 The simplest way to contribute to this project is by [opening an issue](https://github.com/fetch-rewards/swift-synchronization/issues/new).
