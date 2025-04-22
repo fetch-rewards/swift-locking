@@ -73,14 +73,18 @@ is managing mutual exclusion for you.
 > ```
 
 > [!WARNING]
-> `@Locked` uses `OSAllocatedUnfairLock` to protect shared state. `OSAllocatedUnfairLock` is useful when you need fast, low-level mutual
-> exclusion and can manage the following limitations:
-> - **Thread Starvation**: Due to its unfair nature, some threads might experience indefinite delays in acquiring the lock under high
->   contention.
-> - **Relative Operation Ordering**: The lock ensures mutual exclusion but doesn’t guarantee the order in which threads acquire the lock.
->   This can lead to unexpected behavior when the sequence of operations matters.
-> - **Complex Synchronization Needs**: For scenarios requiring more intricate coordination (e.g., condition variables, read-write locks),
->   `OSAllocatedUnfairLock` might not suffice.
+> `@Locked` uses `OSAllocatedUnfairLock` to protect shared state. This is useful when you need fast, low-level mutual exclusion and
+> can manage the following limitations:
+> - The lock is unfair by design. It may repeatedly favor certain threads over others. This can result in:
+>   - **Thread Starvation**: Some threads might experience indefinite delays in acquiring the lock under high contention.
+>   - **Unpredictable Ordering**: Operations that are meant to be “relative” (e.g. thread A before thread B) may not happen in that
+>     order. This can lead to unexpected behavior when the sequence of operations matters.
+> - `OSAllocatedUnfairLock` only guarantees mutual exclusion, not memory ordering beyond what is needed for the lock.
+>   - If you perform complex relative logic across multiple locks or shared state, you may still get races or undefined behavior,
+>     especially without proper memory barriers.
+> - Locking does not prevent logic bugs.
+>   - You might lock correctly but still compare stale values.
+>   - You could perform multiple operations atomically in your mind, but they’re not in reality.
 >
 > For more complex synchronization requirements or when fairness is crucial, consider using higher-level constructs provided by Swift
 > concurrency or Grand Central Dispatch.
