@@ -60,7 +60,7 @@ to use your property just as you normally would, without ever needing to directl
 is managing mutual exclusion for you.
 
 > [!IMPORTANT]
-> The property to which `@Locked` is attached must be a `var` and have an explicit type:
+> The property to which `@Locked` is attached must be a `var` and must have an explicit type:
 > ```swift
 > // Valid:
 > var count: Int = .zero
