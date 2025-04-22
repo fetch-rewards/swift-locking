@@ -55,6 +55,19 @@ Attach the `@Locked` macro to your property:
 var count: Int
 ```
 
+> [!IMPORTANT]
+> The property to which `@Locked` is attached must be a `var` and have an explicit type:
+> ```swift
+> // Valid:
+> var count: Int = .zero
+> var count = Int.zero
+> var count = Int(1)
+>
+> // Invalid:
+> var count = 1
+> let count: Int = .zero
+> ```
+
 ## Macros
 
 `swift-synchronization` contains the Swift macro `@Locked`.
@@ -93,19 +106,6 @@ private let _count: OSAllocatedUnfairLock<Int>
 
 The backing property uses `OSAllocatedUnfairLock` to synchronize access to its underlying data while the exposed property's 
 accessors allow consumers to interact with this data without interfacing directly with `OSAllocatedUnfairLock`'s API.
-
-> [!IMPORTANT]
-> The property to which `@Locked` is attached must be a `var` and have an explicit type:
-> ```swift
-> // Valid:
-> var count: Int = .zero
-> var count = Int.zero
-> var count = Int(1)
->
-> // Invalid:
-> var count = 1
-> let count: Int = .zero
-> ```
 
 #### Default Value
 
