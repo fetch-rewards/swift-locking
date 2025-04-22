@@ -6,6 +6,7 @@ on:
     branches:
       - main
   pull_request:
+    types: [opened, reopened, synchronize]
     branches:
       - '*'
 
@@ -23,7 +24,13 @@ jobs:
         with:
           xcode-version: latest
 
-      - name: Install dependencies
+      - name: Install Brewfile dependencies
+        run: brew bundle install
+
+      - name: Run SwiftFormat in lint mode
+        run: swiftformat --lint .
+
+      - name: Install package dependencies
         run: swift package resolve
 
       - name: Build the package
