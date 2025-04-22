@@ -55,6 +55,10 @@ Attach the `@Locked` macro to your property:
 var count: Int
 ```
 
+And that's it! Access to your property's underlying data is now synchronized using an `OSAllocatedUnfairLock`. You can continue 
+to use your property just as you normally would, without ever needing to directly access the private, underscored property that 
+is managing mutual exclusion for you.
+
 > [!IMPORTANT]
 > The property to which `@Locked` is attached must be a `var` and have an explicit type:
 > ```swift
