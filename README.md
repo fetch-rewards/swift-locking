@@ -57,9 +57,10 @@ Attach the `@Locked` macro to your property:
 var count: Int
 ```
 
-And that's it! Access to your property's underlying data is now synchronized using an `OSAllocatedUnfairLock`. You can continue 
-to use your property just as you normally would, without ever needing to directly access the private, underscored property that 
-is managing mutual exclusion for you.
+And that's it! Access to your property's underlying data is now synchronized using an 
+[`OSAllocatedUnfairLock`](https://developer.apple.com/documentation/os/osallocatedunfairlock). 
+You can continue to use your property just as you normally would, without ever needing to directly 
+access the private, underscored property that is managing mutual exclusion for you.
 
 > [!IMPORTANT]
 > The property to which `@Locked` is attached must be a `var` and must have an explicit type:
@@ -74,17 +75,19 @@ is managing mutual exclusion for you.
 > let count: Int = .zero
 > ```
 
-`@Locked` must be initialized with a `lockType`. If your property's type conforms to `Sendable`, use `@Locked(.checked)`, otherwise 
-use `@Locked(.unchecked)`.
+`@Locked` must be initialized with a `lockType`. If your property's type conforms to 
+[`Sendable`](https://developer.apple.com/documentation/swift/sendable), use `@Locked(.checked)`, 
+otherwise use `@Locked(.unchecked)`.
 
 > [!WARNING]
-> `@Locked` uses `OSAllocatedUnfairLock` to protect shared mutable state. This is useful when you need fast, low-level mutual exclusion
-> and can manage the following limitations:
+> `@Locked` uses [`OSAllocatedUnfairLock`](https://developer.apple.com/documentation/os/osallocatedunfairlock) to protect shared
+> mutable state. This is useful when you need fast, low-level mutual exclusion and can manage the following limitations:
 > - The lock is unfair by design. It may repeatedly favor certain threads over others. This can result in:
 >   - **Thread Starvation**: Some threads might experience indefinite delays in acquiring the lock under high contention.
 >   - **Unpredictable Ordering**: Operations that are meant to be “relative” (e.g. thread A before thread B) may not happen in that
 >     order. This can lead to unexpected behavior when the sequence of operations matters.
-> - `OSAllocatedUnfairLock` only guarantees mutual exclusion, not memory ordering beyond what is needed for the lock.
+> - [`OSAllocatedUnfairLock`](https://developer.apple.com/documentation/os/osallocatedunfairlock) only guarantees mutual exclusion,
+>   not memory ordering beyond what is needed for the lock.
 >   - If you perform complex relative logic across multiple locks or shared state, you may still get races or undefined behavior,
 >     especially without proper memory barriers.
 > - Locking does not prevent logic bugs.
@@ -130,14 +133,15 @@ var count: Int {
 private let _count: OSAllocatedUnfairLock<Int>
 ```
 
-The backing property uses `OSAllocatedUnfairLock` to synchronize access to its underlying data while the exposed property's 
-accessors allow consumers to interact with this data without interfacing directly with `OSAllocatedUnfairLock`'s API.
+The backing property uses [`OSAllocatedUnfairLock`](https://developer.apple.com/documentation/os/osallocatedunfairlock) to synchronize 
+access to its underlying data while the exposed property's accessors allow consumers to interact with this data without interfacing 
+directly with [`OSAllocatedUnfairLock`](https://developer.apple.com/documentation/os/osallocatedunfairlock)'s API.
 
 #### `LockType`
 
 `@Locked` takes a single argument: `lockType`. The possible values are `.checked` and `.unchecked`. 
 
-If your property's type conforms to `Sendable`, use `.checked`:
+If your property's type conforms to [`Sendable`](https://developer.apple.com/documentation/swift/sendable), use `.checked`:
 ```swift
 @Locked(.checked)
 var count: Int
@@ -166,7 +170,7 @@ var count: Int {
 private let _count: OSAllocatedUnfairLock<Int>
 ```
 
-If your property's type does not conform to `Sendable`, use `.unchecked`:
+If your property's type does not conform to [`Sendable`](https://developer.apple.com/documentation/swift/sendable), use `.unchecked`:
 ```swift
 @Locked(.unchecked)
 var nonSendableInstance: NonSendableType
