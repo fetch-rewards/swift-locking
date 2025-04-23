@@ -37,16 +37,16 @@ To add Swift Synchronization to a Swift package manifest file:
       from: "<#latest swift-synchronization tag#>"
   )
   ```
-- Add the `Locked` product to your target's `dependencies`:
+- Add the `Synchronization` product to your target's `dependencies`:
   ```swift
-  .product(name: "Locked", package: "swift-synchronization")
+  .product(name: "Synchronization", package: "swift-synchronization")
   ```
 
 ## Usage
 
-Import `Locked`:
+Import `Synchronization`:
 ```swift
-import Locked
+import Synchronization
 ```
 
 Attach the `@Locked` macro to your property:
