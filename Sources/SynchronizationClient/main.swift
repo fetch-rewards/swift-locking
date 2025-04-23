@@ -5,11 +5,11 @@
 //  Copyright © 2025 Fetch.
 //
 
-import Locked
+import Synchronization
 
 class SharedClass {
     @Locked(.checked)
-    var count = Int.zero
+    var count: Int
 
     init(count: Int) {
         self.count = count

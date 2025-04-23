@@ -5,9 +5,9 @@
 //  Copyright © 2025 Fetch.
 //
 
-#if canImport(LockedMacros)
+#if canImport(SynchronizationMacros)
 import Testing
-@testable import LockedMacros
+@testable import SynchronizationMacros
 
 struct Locked_UncheckedTests {
 
