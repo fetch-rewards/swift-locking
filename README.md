@@ -1,10 +1,10 @@
-# swift-synchronization
+# Swift Synchronization
 
 [![ci](https://github.com/fetch-rewards/swift-synchronization/actions/workflows/ci.yml/badge.svg)](https://github.com/fetch-rewards/swift-synchronization/actions/workflows/ci.yml?query=branch%3Amain)
 [![codecov](https://codecov.io/gh/fetch-rewards/swift-synchronization/graph/badge.svg?token=HfHbjO7HH6)](https://codecov.io/gh/fetch-rewards/swift-synchronization)
 [![License](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://github.com/fetch-rewards/swift-synchronization/blob/main/LICENSE)
 
-`swift-synchronization` is a collection of Swift macros used to protect mutable state.
+Swift Synchronization is a collection of Swift macros used to protect mutable state.
 
 - [Example](#example)
 - [Installation](#installation)
@@ -29,7 +29,7 @@ class Locks {
 
 ## Installation
 
-To add `swift-synchronization` to a Swift package manifest file:
+To add Swift Synchronization to a Swift package manifest file:
 - Add the `swift-synchronization` package to your package's `dependencies`:
   ```swift
   .package(
@@ -91,7 +91,7 @@ is managing mutual exclusion for you.
 
 ## Macros
 
-`swift-synchronization` contains the Swift macro `@Locked`.
+Swift Synchronization contains the Swift macro `@Locked`.
 
 ### `@Locked`
 
