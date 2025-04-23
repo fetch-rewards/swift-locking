@@ -72,6 +72,9 @@ is managing mutual exclusion for you.
 > let count: Int = .zero
 > ```
 
+`@Locked` must be initialized with a `lockType`. If your property's type conforms to `Sendable`, use `@Locked(.checked)`, otherwise 
+use `@Locked(.unchecked)`.
+
 > [!WARNING]
 > `@Locked` uses `OSAllocatedUnfairLock` to protect shared state. This is useful when you need fast, low-level mutual exclusion and
 > can manage the following limitations:
