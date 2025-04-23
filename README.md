@@ -11,6 +11,8 @@ Swift Synchronization is a collection of Swift macros used to protect mutable st
 - [Usage](#usage)
 - [Macros](#macros)
   - [`@Locked`](#locked)
+    - [`LockType`](#locktype) 
+    - [Default Value](#default-value) 
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -130,6 +132,68 @@ private let _count: OSAllocatedUnfairLock<Int>
 
 The backing property uses `OSAllocatedUnfairLock` to synchronize access to its underlying data while the exposed property's 
 accessors allow consumers to interact with this data without interfacing directly with `OSAllocatedUnfairLock`'s API.
+
+#### `LockType`
+
+`@Locked` takes a single argument: `lockType`. The possible values are `.checked` and `.unchecked`. 
+
+If your property's type conforms to `Sendable`, use `.checked`:
+```swift
+@Locked(.checked)
+var count: Int
+
+// Generates:
+
+var count: Int {
+    @storageRestrictions(initializes: _count)
+    init(initialValue) {
+        self._count = OSAllocatedUnfairLock<Int>(
+            initialState: initialValue
+        )
+    }
+    get {
+        self._count.withLock { count in
+            count
+        }
+    }
+    set {
+        self._count.withLock { count in
+            count = newValue
+        }
+    }
+}
+
+private let _count: OSAllocatedUnfairLock<Int>
+```
+
+If your property's type does not conform to `Sendable`, use `.unchecked`:
+```swift
+@Locked(.unchecked)
+var nonSendableInstance: NonSendableType
+
+// Generates:
+
+var nonSendableInstance: NonSendableType {
+    @storageRestrictions(initializes: _nonSendableInstance)
+    init(initialValue) {
+        self._nonSendableInstance = OSAllocatedUnfairLock<NonSendableType>(
+            uncheckedState: initialValue
+        )
+    }
+    get {
+        self._nonSendableInstance.withLockUnchecked { nonSendableInstance in
+            nonSendableInstance
+        }
+    }
+    set {
+        self._nonSendableInstance.withLockUnchecked { nonSendableInstance in
+            nonSendableInstance = newValue
+        }
+    }
+}
+
+private let _nonSendableInstance: OSAllocatedUnfairLock<NonSendableType>
+```
 
 #### Default Value
 
