@@ -78,8 +78,8 @@ is managing mutual exclusion for you.
 use `@Locked(.unchecked)`.
 
 > [!WARNING]
-> `@Locked` uses `OSAllocatedUnfairLock` to protect shared state. This is useful when you need fast, low-level mutual exclusion and
-> can manage the following limitations:
+> `@Locked` uses `OSAllocatedUnfairLock` to protect shared mutable state. This is useful when you need fast, low-level mutual exclusion
+> and can manage the following limitations:
 > - The lock is unfair by design. It may repeatedly favor certain threads over others. This can result in:
 >   - **Thread Starvation**: Some threads might experience indefinite delays in acquiring the lock under high contention.
 >   - **Unpredictable Ordering**: Operations that are meant to be “relative” (e.g. thread A before thread B) may not happen in that
