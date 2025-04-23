@@ -4,7 +4,7 @@ import CompilerPluginSupport
 import PackageDescription
 
 let package = Package(
-    name: "Locked",
+    name: "swift-synchronization",
     platforms: [
         .macOS(.v13),
         .iOS(.v16),
@@ -35,9 +35,7 @@ let package = Package(
     targets: [
         .target(
             name: "Locked",
-            dependencies: [
-                "LockedMacros",
-            ],
+            dependencies: ["LockedMacros"],
             swiftSettings: .default
         ),
         .executableTarget(
