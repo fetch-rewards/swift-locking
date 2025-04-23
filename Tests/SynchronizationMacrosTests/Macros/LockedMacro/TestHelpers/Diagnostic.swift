@@ -5,10 +5,10 @@
 //  Copyright © 2025 Fetch.
 //
 
-#if canImport(LockedMacros)
+#if canImport(SynchronizationMacros)
 import SwiftDiagnostics
 import SwiftSyntaxMacrosGenericTestSupport
-@testable import LockedMacros
+@testable import SynchronizationMacros
 
 func diagnostic(
     id: MessageID? = nil,

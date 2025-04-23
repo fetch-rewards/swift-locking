@@ -5,10 +5,10 @@
 //  Copyright © 2025 Fetch.
 //
 
-#if canImport(LockedMacros)
+#if canImport(SynchronizationMacros)
 import SwiftSyntax
 import Testing
-@testable import LockedMacros
+@testable import SynchronizationMacros
 
 struct LockTypeTests {
 
