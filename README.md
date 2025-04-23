@@ -100,7 +100,7 @@ Swift Synchronization contains the Swift macro `@Locked`.
 
 ### `@Locked`
 
-`@Locked` is an attached, peer and accessor macro that generates a private, protected, underscored backing property along 
+`@Locked` is an attached peer and accessor macro that generates a private, protected, underscored backing property along 
 with accessors for reading from and writing to that backing property:
 ```swift
 @Locked(.checked)
