@@ -14,7 +14,7 @@ let package = Package(
     ],
     products: [
         .library(
-            name: "Locked",
+            name: "Synchronization",
             targets: ["Locked"]
         ),
         .executable(
