@@ -4,7 +4,7 @@
 [![codecov](https://codecov.io/gh/fetch-rewards/swift-synchronization/graph/badge.svg?token=HfHbjO7HH6)](https://codecov.io/gh/fetch-rewards/swift-synchronization)
 [![License](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://github.com/fetch-rewards/swift-synchronization/blob/main/LICENSE)
 
-Swift Synchronization is a collection of Swift macros used to protect mutable state.
+Swift Synchronization is a collection of Swift macros used to protect shared mutable state.
 
 - [Example](#example)
 - [Installation](#installation)
