@@ -2,6 +2,8 @@
 
 [![ci](https://github.com/fetch-rewards/swift-synchronization/actions/workflows/ci.yml/badge.svg)](https://github.com/fetch-rewards/swift-synchronization/actions/workflows/ci.yml?query=branch%3Amain)
 [![codecov](https://codecov.io/gh/fetch-rewards/swift-synchronization/graph/badge.svg?token=HfHbjO7HH6)](https://codecov.io/gh/fetch-rewards/swift-synchronization)
+[![swift](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Ffetch-rewards%2Fswift-synchronization%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/fetch-rewards/swift-synchronization)
+[![platforms](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Ffetch-rewards%2Fswift-synchronization%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/fetch-rewards/swift-synchronization)
 [![License](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://github.com/fetch-rewards/swift-synchronization/blob/main/LICENSE)
 
 Swift Synchronization is a collection of Swift macros used to protect shared mutable state.
