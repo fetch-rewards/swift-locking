@@ -1,7 +1,6 @@
 //
 //  Locked_CheckedTests.swift
 //
-//  Created by Gray Campbell.
 //  Copyright © 2025 Fetch.
 //
 
