@@ -4,7 +4,7 @@
 //  Copyright © 2025 Fetch.
 //
 
-import Synchronization
+import Locking
 
 class SharedClass {
     @Locked(.checked)

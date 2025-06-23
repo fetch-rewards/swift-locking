@@ -4,9 +4,9 @@
 //  Copyright © 2025 Fetch.
 //
 
-#if canImport(SynchronizationMacros)
+#if canImport(LockingMacros)
 import Testing
-@testable import SynchronizationMacros
+@testable import LockingMacros
 
 struct LockedMacro_MacroErrorTests {
 

@@ -4,7 +4,7 @@ import CompilerPluginSupport
 import PackageDescription
 
 let package = Package(
-    name: "swift-synchronization",
+    name: "swift-locking",
     platforms: [
         .macOS(.v13),
         .iOS(.v16),
@@ -14,12 +14,12 @@ let package = Package(
     ],
     products: [
         .library(
-            name: "Synchronization",
-            targets: ["Synchronization"]
+            name: "Locking",
+            targets: ["Locking"]
         ),
         .executable(
-            name: "SynchronizationClient",
-            targets: ["SynchronizationClient"]
+            name: "LockingClient",
+            targets: ["LockingClient"]
         ),
     ],
     dependencies: [
@@ -34,17 +34,17 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "Synchronization",
-            dependencies: ["SynchronizationMacros"],
+            name: "Locking",
+            dependencies: ["LockingMacros"],
             swiftSettings: .default
         ),
         .executableTarget(
-            name: "SynchronizationClient",
-            dependencies: ["Synchronization"],
+            name: "LockingClient",
+            dependencies: ["Locking"],
             swiftSettings: .default
         ),
         .macro(
-            name: "SynchronizationMacros",
+            name: "LockingMacros",
             dependencies: [
                 .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
                 .product(name: "SwiftCompilerPlugin", package: "swift-syntax"),
@@ -53,9 +53,9 @@ let package = Package(
             swiftSettings: .default
         ),
         .testTarget(
-            name: "SynchronizationMacrosTests",
+            name: "LockingMacrosTests",
             dependencies: [
-                "SynchronizationMacros",
+                "LockingMacros",
                 .product(
                     name: "SwiftSyntaxMacrosTestSupport",
                     package: "swift-syntax"

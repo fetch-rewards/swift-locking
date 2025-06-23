@@ -1,23 +1,23 @@
 //
-//  Locked_UncheckedTests.swift
+//  Locked_CheckedTests.swift
 //
 //  Copyright © 2025 Fetch.
 //
 
-#if canImport(SynchronizationMacros)
+#if canImport(LockingMacros)
 import Testing
-@testable import SynchronizationMacros
+@testable import LockingMacros
 
-struct Locked_UncheckedTests {
+struct Locked_CheckedTests {
 
     // MARK: Explicit Type Tests
 
     @Test
-    func uncheckedLockWithExplicitTypeAndInitialValue() {
+    func checkedLockWithExplicitTypeAndInitialValue() {
         assertMacroExpansion(
             """
             class Locks {
-                @Locked(.unchecked)
+                @Locked(.checked)
                 var count: Int = .zero
             }
             """,
@@ -25,19 +25,19 @@ struct Locked_UncheckedTests {
             class Locks {
                 var count: Int {
                     get {
-                        self._count.withLockUnchecked { count in
+                        self._count.withLock { count in
                             count
                         }
                     }
                     set {
-                        self._count.withLockUnchecked { count in
+                        self._count.withLock { count in
                             count = newValue
                         }
                     }
                 }
 
                 private let _count = OSAllocatedUnfairLock<Int>(
-                    uncheckedState: .zero
+                    initialState: .zero
                 )
             }
             """
@@ -45,11 +45,11 @@ struct Locked_UncheckedTests {
     }
 
     @Test
-    func uncheckedLockWithExplicitTypeAndNoInitialValue() {
+    func checkedLockWithExplicitTypeAndNoInitialValue() {
         assertMacroExpansion(
             """
             class Locks {
-                @Locked(.unchecked)
+                @Locked(.checked)
                 var count: Int
             }
             """,
@@ -59,16 +59,16 @@ struct Locked_UncheckedTests {
                     @storageRestrictions(initializes: _count)
                     init(initialValue) {
                         self._count = OSAllocatedUnfairLock<Int>(
-                            uncheckedState: initialValue
+                            initialState: initialValue
                         )
                     }
                     get {
-                        self._count.withLockUnchecked { count in
+                        self._count.withLock { count in
                             count
                         }
                     }
                     set {
-                        self._count.withLockUnchecked { count in
+                        self._count.withLock { count in
                             count = newValue
                         }
                     }
@@ -83,11 +83,11 @@ struct Locked_UncheckedTests {
     // MARK: Function Call Type Tests
 
     @Test
-    func uncheckedLockWithFunctionCallType() {
+    func checkedLockWithFunctionCallType() {
         assertMacroExpansion(
             """
             class Locks {
-                @Locked(.unchecked)
+                @Locked(.checked)
                 var count = Int(1)
             }
             """,
@@ -95,19 +95,19 @@ struct Locked_UncheckedTests {
             class Locks {
                 var count {
                     get {
-                        self._count.withLockUnchecked { count in
+                        self._count.withLock { count in
                             count
                         }
                     }
                     set {
-                        self._count.withLockUnchecked { count in
+                        self._count.withLock { count in
                             count = newValue
                         }
                     }
                 }
 
                 private let _count = OSAllocatedUnfairLock<Int>(
-                    uncheckedState: Int(1)
+                    initialState: Int(1)
                 )
             }
             """
@@ -117,11 +117,11 @@ struct Locked_UncheckedTests {
     // MARK: Member Access Type Tests
 
     @Test
-    func uncheckedLockWithMemberAccessType() {
+    func checkedLockWithMemberAccessType() {
         assertMacroExpansion(
             """
             class Locks {
-                @Locked(.unchecked)
+                @Locked(.checked)
                 var count = Int.zero
             }
             """,
@@ -129,19 +129,19 @@ struct Locked_UncheckedTests {
             class Locks {
                 var count {
                     get {
-                        self._count.withLockUnchecked { count in
+                        self._count.withLock { count in
                             count
                         }
                     }
                     set {
-                        self._count.withLockUnchecked { count in
+                        self._count.withLock { count in
                             count = newValue
                         }
                     }
                 }
 
                 private let _count = OSAllocatedUnfairLock<Int>(
-                    uncheckedState: Int.zero
+                    initialState: Int.zero
                 )
             }
             """
@@ -151,7 +151,7 @@ struct Locked_UncheckedTests {
     // MARK: Error Tests
 
     @Test
-    func uncheckedLockWithNonPropertyDeclaration() async throws {
+    func checkedLockWithNonPropertyDeclaration() async throws {
         let diagnostic = diagnostic(
             error: .canOnlyBeAppliedToPropertyDeclarations,
             line: 2,
@@ -161,7 +161,7 @@ struct Locked_UncheckedTests {
         assertMacroExpansion(
             """
             class Locks {
-                @Locked(.unchecked)
+                @Locked(.checked)
                 func count() {}
             }
             """,
@@ -177,7 +177,7 @@ struct Locked_UncheckedTests {
     }
 
     @Test
-    func uncheckedLockWithLetPropertyDeclaration() {
+    func checkedLockWithLetPropertyDeclaration() {
         let diagnostic = diagnostic(
             error: .canOnlyBeAppliedToPropertyDeclarationsWithVarBindingSpecifier,
             line: 2,
@@ -187,7 +187,7 @@ struct Locked_UncheckedTests {
         assertMacroExpansion(
             """
             class Locks {
-                @Locked(.unchecked)
+                @Locked(.checked)
                 let count: Int
             }
             """,
@@ -204,7 +204,7 @@ struct Locked_UncheckedTests {
     }
 
     @Test
-    func uncheckedLockWithNoTypeInformation() {
+    func checkedLockWithNoTypeInformation() {
         let diagnostic = diagnostic(
             error: .unableToParseType,
             line: 2,
@@ -214,7 +214,7 @@ struct Locked_UncheckedTests {
         assertMacroExpansion(
             """
             class Locks {
-                @Locked(.unchecked)
+                @Locked(.checked)
                 var count
             }
             """,
