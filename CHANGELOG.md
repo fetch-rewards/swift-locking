@@ -8,7 +8,7 @@ This project adheres to [Semantic Versioning](https://semver.org).
 
 ### 🚀 Initial Release
 
-This is the first public release of Swift Locking, a library that provides a collection of Swift macros used to protect shared mutable state.
+This is the first public release of Swift Synchronization, a library that provides a collection of Swift macros used to protect shared mutable state.
 
 This initial release includes:
 
