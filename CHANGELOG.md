@@ -9,7 +9,8 @@ This project adheres to [Semantic Versioning](https://semver.org).
 ### Bug Fixes
 - Rename package to Swift Locking ([#35](https://github.com/fetch-rewards/swift-locking/pull/35))
 
-> Note: Historical changelog entries before this version may reference the old repository name: Swift Synchronization.
+> [!NOTE]
+> Historical changelog entries before this version may reference the old repository name: Swift Synchronization.
 
 ### Documentation
 - Add SPI badges to README ([#28](https://github.com/fetch-rewards/swift-locking/pull/28))
