@@ -2,7 +2,7 @@
 
 > [!IMPORTANT]
 > PRs are merged at the discretion of the project's maintainers. If you would like to contribute code to this project,
-> please first [open an issue](https://github.com/fetch-rewards/swift-synchronization/issues/new) with a detailed description
+> please first [open an issue](https://github.com/fetch-rewards/swift-locking/issues/new) with a detailed description
 > of your proposed changes. This allows us to discuss implementation, alternatives, etc. and avoid wasting time dealing with
 > the inefficient back and forth that can arise when PRs are created without prior discussion.
 >
@@ -10,7 +10,7 @@
 > changes.
 >
 > By opening an issue or contributing code to this project, you agree to follow our
-> [Code of Conduct](https://github.com/fetch-rewards/swift-synchronization/blob/main/CODE_OF_CONDUCT.md).
+> [Code of Conduct](https://github.com/fetch-rewards/swift-locking/blob/main/CODE_OF_CONDUCT.md).
 > 
 > Thank you for helping us make this project the best it can be!
 
@@ -22,7 +22,7 @@
 ## Homebrew
 
 This project uses [Homebrew](https://brew.sh) to manage certain dependencies required for development. These
-dependencies are defined in the [`Brewfile`](https://github.com/fetch-rewards/swift-synchronization/blob/main/Brewfile)
+dependencies are defined in the [`Brewfile`](https://github.com/fetch-rewards/swift-locking/blob/main/Brewfile)
 located at the repository's root.
 
 To install these dependencies, use the command line to navigate to the repository’s root and run the following command:

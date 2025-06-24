@@ -1,12 +1,12 @@
-# Swift Synchronization
+# Swift Locking
 
-[![ci](https://github.com/fetch-rewards/swift-synchronization/actions/workflows/ci.yml/badge.svg)](https://github.com/fetch-rewards/swift-synchronization/actions/workflows/ci.yml?query=branch%3Amain)
-[![codecov](https://codecov.io/gh/fetch-rewards/swift-synchronization/graph/badge.svg?token=HfHbjO7HH6)](https://codecov.io/gh/fetch-rewards/swift-synchronization)
-[![swift](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Ffetch-rewards%2Fswift-synchronization%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/fetch-rewards/swift-synchronization)
-[![platforms](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Ffetch-rewards%2Fswift-synchronization%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/fetch-rewards/swift-synchronization)
-[![License](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://github.com/fetch-rewards/swift-synchronization/blob/main/LICENSE)
+[![ci](https://github.com/fetch-rewards/swift-locking/actions/workflows/ci.yml/badge.svg)](https://github.com/fetch-rewards/swift-locking/actions/workflows/ci.yml?query=branch%3Amain)
+[![codecov](https://codecov.io/gh/fetch-rewards/swift-locking/graph/badge.svg?token=HfHbjO7HH6)](https://codecov.io/gh/fetch-rewards/swift-locking)
+[![swift](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Ffetch-rewards%2Fswift-locking%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/fetch-rewards/swift-locking)
+[![platforms](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Ffetch-rewards%2Fswift-locking%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/fetch-rewards/swift-locking)
+[![License](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://github.com/fetch-rewards/swift-locking/blob/main/LICENSE)
 
-Swift Synchronization is a collection of Swift macros used to protect shared mutable state.
+Swift Locking is a collection of Swift macros used to protect shared mutable state.
 
 - [Example](#example)
 - [Installation](#installation)
@@ -33,24 +33,24 @@ class Locks {
 
 ## Installation
 
-To add Swift Synchronization to a Swift package manifest file:
-- Add the `swift-synchronization` package to your package's `dependencies`:
+To add Swift Locking to a Swift package manifest file:
+- Add the `swift-locking` package to your package's `dependencies`:
   ```swift
   .package(
-      url: "https://github.com/fetch-rewards/swift-synchronization.git",
-      from: "<#latest swift-synchronization tag#>"
+      url: "https://github.com/fetch-rewards/swift-locking.git",
+      from: "<#latest swift-locking tag#>"
   )
   ```
-- Add the `Synchronization` product to your target's `dependencies`:
+- Add the `Locking` product to your target's `dependencies`:
   ```swift
-  .product(name: "Synchronization", package: "swift-synchronization")
+  .product(name: "Locking", package: "swift-locking")
   ```
 
 ## Usage
 
-Import `Synchronization`:
+Import `Locking`:
 ```swift
-import Synchronization
+import Locking
 ```
 
 Attach the `@Locked` macro to your property:
@@ -96,12 +96,12 @@ otherwise use `@Locked(.unchecked)`.
 >   - You might lock correctly but still compare stale values.
 >   - You could perform multiple operations atomically in your mind, but they’re not in reality.
 >
-> For more complex synchronization requirements or when fairness is crucial, consider using higher-level constructs provided by Swift
+> For more complex locking requirements or when fairness is crucial, consider using higher-level constructs provided by Swift
 > concurrency or Grand Central Dispatch.
 
 ## Macros
 
-Swift Synchronization contains the Swift macro `@Locked`.
+Swift Locking contains the Swift macro `@Locked`.
 
 ### `@Locked`
 
@@ -244,12 +244,12 @@ class Locks {
 
 ## Contributing
 
-The simplest way to contribute to this project is by [opening an issue](https://github.com/fetch-rewards/swift-synchronization/issues/new).
+The simplest way to contribute to this project is by [opening an issue](https://github.com/fetch-rewards/swift-locking/issues/new).
 
-If you would like to contribute code to this project, please read our [Contributing Guidelines](https://github.com/fetch-rewards/swift-synchronization/blob/main/CONTRIBUTING.md).
+If you would like to contribute code to this project, please read our [Contributing Guidelines](https://github.com/fetch-rewards/swift-locking/blob/main/CONTRIBUTING.md).
 
-By opening an issue or contributing code to this project, you agree to follow our [Code of Conduct](https://github.com/fetch-rewards/swift-synchronization/blob/main/CODE_OF_CONDUCT.md).
+By opening an issue or contributing code to this project, you agree to follow our [Code of Conduct](https://github.com/fetch-rewards/swift-locking/blob/main/CODE_OF_CONDUCT.md).
 
 ## License
 
-This library is released under the MIT license. See [LICENSE](https://github.com/fetch-rewards/swift-synchronization/blob/main/LICENSE) for details.
+This library is released under the MIT license. See [LICENSE](https://github.com/fetch-rewards/swift-locking/blob/main/LICENSE) for details.
