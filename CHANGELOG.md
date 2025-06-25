@@ -34,6 +34,7 @@ This project adheres to [Semantic Versioning](https://semver.org).
 
 - Update SwiftFormat minimum version and output version in CI ([#33](https://github.com/fetch-rewards/swift-locking/pull/33))
 - Update SwiftSyntax dependency URL ([#36](https://github.com/fetch-rewards/swift-locking/pull/36))
+- Update SwiftSyntaxSugar dependency version to 0.1.1 ([#39](https://github.com/fetch-rewards/swift-locking/pull/39))
 
 ### CI/CD
 
