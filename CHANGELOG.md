@@ -4,9 +4,9 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](https://semver.org).
 
-## 📦 [Version 1.0.0](https://github.com/fetch-rewards/swift-locking/releases/tag/1.0.0) - June 24, 2025 ([Full Changelog](https://github.com/fetch-rewards/swift-locking/compare/0.1.0...1.0.0))
+## 📦 [Version 0.2.0](https://github.com/fetch-rewards/swift-locking/releases/tag/1.0.0) - June 25, 2025 ([Full Changelog](https://github.com/fetch-rewards/swift-locking/compare/0.1.0...0.2.0))
 
-### <a name="breaking-changes-1.0.0"></a>Breaking Changes
+### <a name="breaking-changes-0.2.0"></a>Breaking Changes
 
 - Rename package to Swift Locking ([#35](https://github.com/fetch-rewards/swift-locking/pull/35))
     - References to the package URL should be changed to `"https://github.com/fetch-rewards/swift-locking.git"`.
@@ -18,7 +18,7 @@ This project adheres to [Semantic Versioning](https://semver.org).
 
 ### Bug Fixes
 
-- **[[BREAKING](#breaking-changes-1.0.0)]** Rename package to Swift Locking ([#35](https://github.com/fetch-rewards/swift-locking/pull/35))
+- **[[BREAKING](#breaking-changes-0.2.0)]** Rename package to Swift Locking ([#35](https://github.com/fetch-rewards/swift-locking/pull/35))
 
 ### Documentation
 
