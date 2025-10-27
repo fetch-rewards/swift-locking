@@ -12,8 +12,7 @@ This project adheres to [Semantic Versioning](https://semver.org).
 
 ### 📦 Dependencies
 
-- Upgrade `swift-syntax` to `602.0.0` ([#42](https://github.com/fetch-rewards/swift-locking/pull/42))
-- Upgrade `SwiftSyntaxSugar` to `0.1.2` ([#42](https://github.com/fetch-rewards/swift-locking/pull/42))
+- Update SwiftSyntax and SwiftSyntaxSugar ([#42](https://github.com/fetch-rewards/swift-locking/pull/42))
 
 
 ## 🚀 [Version 0.2.0](https://github.com/fetch-rewards/swift-locking/releases/tag/0.2.0) - June 25, 2025 ([Full Changelog](https://github.com/fetch-rewards/swift-locking/compare/0.1.0...0.2.0))
